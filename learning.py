@@ -1,3 +1,57 @@
+import sys
+print sys.maxint
+
+
+exit()
+
+exec "import os; os.system('ls /')"
+
+
+exit()
+
+exec "a = 1"
+print a
+exec "a = 2"
+print a
+
+exit()
+
+a = {'chave': 'valor', 'spam': 'eggs'}
+print a
+del a['spam']
+print a
+
+exit()
+
+a = [1, 2, 3]
+print a
+del a[1]
+print a
+
+exit()
+
+f = open("/tmp/print", "w")
+print >> f, "Dentro do arquivo"
+f.close
+
+exit()
+
+print "spam"
+print "eggs"
+print "foo",
+print "bar"
+
+exit()
+
+a = ["spam", "eggs", "foo", "bar", "qoox"]
+
+for i, elemento in enumerate(a):
+  print i, elemento
+
+print list(enumerate(a))
+
+
+exit()
 
 
 a = [("key1", "value1"),("key2", "value2"),("key3", "value3")]
