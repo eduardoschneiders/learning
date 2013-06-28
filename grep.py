@@ -17,16 +17,22 @@ def find(search, filename):
   f.close
 
 def main(args):
+  try:
+    search = args[1]
+  except IndexError:
+    print >> sys.stderr, "Usage: grep [OPTION]...PATTERN [FILE]..."
+    return ERROR
 
-  search = args[1]
   filenames = args[2:]
 
   ret = NOT_FOUND
-
   for filename in filenames:
-    for line in find(search, filename):
-      print "%s:%s" % (filename, line)
-      ret = FOUND
+    try:
+      for line in find(search, filename):
+        print "%s:%s" % (filename, line)
+        ret = FOUND
+    except IOError, ex:
+      print >>sys.stderr, "grep.py: %s: %s" % (ex.filename, ex.strerror)
 
   return ret
 
