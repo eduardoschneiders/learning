@@ -1,0 +1,18 @@
+Nomes: José Schmidt, Gabriel Tondin, Eduardo Schneiders
+
+Nome: José Luiz da Silva
+Numero Conta: abc123
+Senha: senha
+Cliente Desde: 01/01/2000
+Telefone: 3565.5787
+Endereço: Rua Londres 45
+Salário: 900,00
+CPF: 021.250.300-81
+Nome: Eduardo Schneiders
+Numero Conta: conta123
+Senha: senhasecreta
+Cliente Desde: 17/09/1990
+Telefone: 3543.8765
+Endereço: Rua Rio Pardo
+Faturamento Mensal: 2.000.000,00
+CNPJ: 022.250.300-81
