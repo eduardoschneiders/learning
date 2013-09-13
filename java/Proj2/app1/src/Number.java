@@ -1,3 +1,8 @@
+/**
+* This class writes the lowest number.
+* @authors Eduardo Schneiders, José Schmidt
+* @version 1.0
+*/
 
 public class Number {
 	double number1;
