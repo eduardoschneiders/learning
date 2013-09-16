@@ -1,0 +1,20 @@
+
+<html>
+  <head>
+    <script type="text/javascript">
+      Date.prototype.getDateOfYear = function(){
+        var oneJan = new Date(this.getFullYear(), 0, 1);
+
+        return Math.ceil((this - oneJan) / 86400000);
+      }
+
+      var today = new Date();
+
+      if(today.getDateOfYear() == Math.pow(2, 8))
+        console.log('Dia do programador!');
+
+    </script>
+  </head>
+  <body>
+  </body>
+</html>
