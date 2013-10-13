@@ -1,0 +1,18 @@
+import java.util.List;
+
+
+public class Main {
+
+	/**
+	 * @param args
+	 */
+	public static void main(String[] args) {
+		CalculadoraSimples calcSimples = new CalculadoraSimples();
+		List <Integer> numeros = new ArrayList<Integer>();  
+		numeros.add(1);
+		numeros.add(2);
+		numeros.add(3);
+		numeros.add(4);
+	}
+
+}

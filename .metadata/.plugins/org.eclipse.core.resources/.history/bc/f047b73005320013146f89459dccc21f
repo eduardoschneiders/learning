@@ -1,0 +1,51 @@
+import java.util.List;
+
+public class CalculadoraSimples {
+
+	public CalculadoraSimples() {
+		// TODO Auto-generated constructor stub
+	}
+	
+	public Calculadora soma(List<Integer> listaValores){
+		Calculadora calc = new Calculadora();
+		int result = 0;
+		
+		for(int i = 0; i < listaValores.size(); i++){
+			result = result + listaValores.get(i);
+		}
+		
+		calc.operandos = listaValores;
+		calc.resultado = result;
+		
+		return calc;
+	}
+	
+	public Calculadora subtracao(List<Integer> listaValores){
+		Calculadora calc = new Calculadora();
+		int result = 0;
+		
+		for(int i = 0; i < listaValores.size(); i++){
+			result = result - listaValores.get(i);
+		}
+		
+		calc.operandos = listaValores;
+		calc.resultado = result;
+		
+		return calc;
+	}
+	
+	public Calculadora subtracao(List<Integer> listaValores){
+		Calculadora calc = new Calculadora();
+		int result = 0;
+		
+		for(int i = 0; i < listaValores.size(); i++){
+			result = result - listaValores.get(i);
+		}
+		
+		calc.operandos = listaValores;
+		calc.resultado = result;
+		
+		return calc;
+	}
+
+}

@@ -1,0 +1,20 @@
+import java.util.List;
+
+
+public class CalculadoraComplexa extends Calculadora {
+
+	public CalculadoraComplexa() {
+		// TODO Auto-generated constructor stub
+	}
+	
+	public Calculadora restoDivisao(List<Integer> listaValores){
+		Calculadora calc = new Calculadora();
+		int result = listaValores.get(0) % listaValores.get(1);
+		calc.operandos = listaValores;
+		calc.resultado = result;
+		
+		return calc;
+		
+	}
+
+}

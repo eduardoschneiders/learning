@@ -1,0 +1,13 @@
+
+public class App {
+
+	/**
+	 * @param args
+	 */
+	public static void main(String[] args) {
+		Pessoa p1 = new Pessoa("eduardo", 10);
+		Pessoa p2 = new Pessoa("teste", 20);
+
+	}
+
+}

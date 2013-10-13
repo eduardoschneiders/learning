@@ -1,0 +1,13 @@
+import java.util.List;
+
+public class CalculadoraSimples {
+
+	public CalculadoraSimples() {
+		// TODO Auto-generated constructor stub
+	}
+	
+	public Calculadora soma(List<Integer> listaValores){
+		
+	}
+
+}

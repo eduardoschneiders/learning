@@ -1,0 +1,54 @@
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+
+
+public class Main {
+
+	/**
+	 * @param args
+	 */
+	public static void main(String[] args) {
+		CalculadoraSimples calcSimples = new CalculadoraSimples();
+
+		
+		Calculadora resultado = calcSimples.soma(generateIntegers(5, 1, 5));
+		System.out.println(resultado.operandos +  Double.toString(resultado.resultado));
+		
+		
+		CalculadoraComplexa calcComplexa = new CalculadoraComplexa();
+		
+		Calculadora resultadoRestoDivisao = calcComplexa.restoDivisao(generateIntegers(2, 1, 5));		
+		System.out.println(resultadoRestoDivisao.operandos + Double.toString(resultadoRestoDivisao.resultado));
+		
+		
+		Calculadora resultadoPotencia = calcComplexa.potencia(generateIntegers(2, 1, 5));		
+		System.out.println(resultadoPotencia.operandos + Double.toString(resultadoPotencia.resultado));
+		
+		Calculadora resultadoValorMaximo = calcComplexa.valorMaximo(generateIntegers(20, 1, 10));		
+		System.out.println(resultadoValorMaximo.operandos  + Double.toString(resultadoValorMaximo.resultado));
+		
+		Calculadora resultadoValorMenor = calcComplexa.valorMinimo(generateIntegers(3, 3, 10));		
+		System.out.println(resultadoValorMenor.operandos +  Double.toString(resultadoValorMenor.resultado));
+	}
+	
+	
+	public static List<Integer> generateIntegers(int count, int minValue, int maxValue){
+		List<Integer> ints = new ArrayList<Integer>();
+		int maximum = maxValue;
+		int minimum = minValue;
+		for (int j = 0; j < count; j++) {
+			Random rn = new Random();
+			int n = maximum - minimum + 1;
+			int i = rn.nextInt() % n;
+			int randomNum = minimum + i;
+			if(randomNum < 0)
+				randomNum = randomNum * -1;
+			
+			ints.add(randomNum);
+		}
+		
+		return ints;
+	}
+
+}

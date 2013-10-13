@@ -1,0 +1,34 @@
+
+
+public class Main {
+
+	/**
+	 * @param args
+	 */
+	public static void main(String[] args) {
+		CalculadoraSimples calcSimples = new CalculadoraSimples();
+
+		
+		Calculadora resultado = calcSimples.soma(Util.generateIntegers(5, 1, 5));
+		System.out.println(resultado.operandos +  Double.toString(resultado.resultado));
+		
+		
+		CalculadoraComplexa calcComplexa = new CalculadoraComplexa();
+		
+		Calculadora resultadoRestoDivisao = calcComplexa.restoDivisao(Util.generateIntegers(2, 1, 5));		
+		System.out.println(resultadoRestoDivisao.operandos + Double.toString(resultadoRestoDivisao.resultado));
+		
+		
+		Calculadora resultadoPotencia = calcComplexa.potencia(Util.generateIntegers(2, 1, 5));		
+		System.out.println(resultadoPotencia.operandos + Double.toString(resultadoPotencia.resultado));
+		
+		Calculadora resultadoValorMaximo = calcComplexa.valorMaximo(Util.generateIntegers(20, 1, 10));		
+		System.out.println(resultadoValorMaximo.operandos  + Double.toString(resultadoValorMaximo.resultado));
+		
+		Calculadora resultadoValorMenor = calcComplexa.valorMinimo(Util.generateIntegers(3, 3, 10));		
+		System.out.println(resultadoValorMenor.operandos +  Double.toString(resultadoValorMenor.resultado));
+		
+		Calculadora resultadoValorMedio = calcComplexa.valorMedio(Util.generateIntegers(3, 9, 9));
+		System.out.println(resultadoValorMedio.operandos +  Double.toString(resultadoValorMedio.resultado));
+	}
+}
