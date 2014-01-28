@@ -1,3 +1,41 @@
+module Searchable
+  def find_all_from(user)
+    puts 'find method'
+  end
+
+  def preview
+    puts 'preview'
+  end
+end
+
+class Tweet
+  #Expose methods as class methods, not instance method
+  extend Searchable
+end
+
+Tweet.find_all_from('@eduschneiders')
+
+
+module ImageUtils
+  def resize
+    puts 'resize method'
+  end
+end
+
+class Image
+  #methods as instance methods
+  include ImageUtils
+end
+
+image = Image.new
+image.resize
+
+#this object now can execute the methods of Searchable
+image.extend(Searchable)
+image.preview
+
+
+puts '------------------------------'
 class Name
   def initialize(first, last = nil)
     @first = first
