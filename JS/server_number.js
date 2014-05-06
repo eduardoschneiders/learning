@@ -1,7 +1,7 @@
-var express = require("express");
-var app = express();
-var http = require('http');
-var request = require('request');
+var express   = require("express");
+var app       = express();
+var http      = require('http');
+var request   = require('request');
 var operators = {
   77: 'NEXTEL (SMP)',
   78: 'E_NEXTEL (SME)',
