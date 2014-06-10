@@ -1,0 +1,5 @@
+guard 'shell' do
+  watch('caesar_cipher_encrypt.rb') do |m|
+    system("ruby  caesar_cipher_encrypt.rb")
+  end
+end
