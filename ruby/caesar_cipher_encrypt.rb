@@ -1,3 +1,11 @@
+require 'unicode_utils/upcase'
+
+class String
+  def upcase
+    UnicodeUtils.upcase(self)
+  end
+end
+
 def alphabet_down_case
   ('a'..'z').to_a
 end
@@ -7,11 +15,15 @@ def alphabet_up_case
 end
 
 def alphabet_especial_caracters
-  [' ', '!', '@', '#', '$', '%', '*', '(', ')', '_', '-', '+', '=', '[', '{', '}', ']', '/', '?', ';', ':', '.', '>', ',', '<', 'ç']
+  [' ', '!', '@', '#', '$', '%', '*', '(', ')', '_', '-', '+', '=', '[', '{', '}', ']', '/', '?', ';', ':', '.', '>', ',', '<']
 end
 
-def alphabet_accent_caracters
-  ['à', 'á', 'â', 'ã', 'ä', 'è', 'é', 'ê', 'ẽ', 'ë', 'ì', 'í', 'î', 'ĩ', 'ï', 'ò', 'ó', 'ô', 'õ', 'ö', 'ù', 'ú', 'û', 'ũ', 'ü']
+def alphabet_accent_caracters_down_case
+  ['à', 'á', 'â', 'ã', 'ä', 'è', 'é', 'ê', 'ẽ', 'ë', 'ì', 'í', 'î', 'ĩ', 'ï', 'ò', 'ó', 'ô', 'õ', 'ö', 'ù', 'ú', 'û', 'ũ', 'ü', 'ç']
+end
+
+def alphabet_accent_caracters_up_case
+  alphabet_accent_caracters_down_case.map(&:upcase)
 end
 
 def caesar_cipher (string, number, encrypt = true)
@@ -22,8 +34,10 @@ def caesar_cipher (string, number, encrypt = true)
       alphabet = alphabet_down_case
     elsif alphabet_especial_caracters.include?(letter)
       alphabet = alphabet_especial_caracters
-    elsif alphabet_accent_caracters.include?(letter)
-      alphabet = alphabet_accent_caracters
+    elsif alphabet_accent_caracters_down_case.include?(letter)
+      alphabet = alphabet_accent_caracters_down_case
+    elsif alphabet_accent_caracters_up_case.include?(letter)
+      alphabet = alphabet_accent_caracters_up_case
     else
       alphabet = alphabet_up_case
     end
