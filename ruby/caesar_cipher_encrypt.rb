@@ -7,7 +7,11 @@ def alphabet_up_case
 end
 
 def alphabet_especial_caracters
-  [' ', '!', '@', '#', '$', '%', '*', '(', ')', '_', '-', '+', '=', '[', '{', '}', ']', '/', '?', ';', ':', '.', '>', ',', '<']
+  [' ', '!', '@', '#', '$', '%', '*', '(', ')', '_', '-', '+', '=', '[', '{', '}', ']', '/', '?', ';', ':', '.', '>', ',', '<', 'ç']
+end
+
+def alphabet_accent_caracters
+  ['à', 'á', 'â', 'ã', 'ä', 'è', 'é', 'ê', 'ẽ', 'ë', 'ì', 'í', 'î', 'ĩ', 'ï', 'ò', 'ó', 'ô', 'õ', 'ö', 'ù', 'ú', 'û', 'ũ', 'ü']
 end
 
 def caesar_cipher (string, number, encrypt = true)
@@ -18,6 +22,8 @@ def caesar_cipher (string, number, encrypt = true)
       alphabet = alphabet_down_case
     elsif alphabet_especial_caracters.include?(letter)
       alphabet = alphabet_especial_caracters
+    elsif alphabet_accent_caracters.include?(letter)
+      alphabet = alphabet_accent_caracters
     else
       alphabet = alphabet_up_case
     end
@@ -36,7 +42,7 @@ def caesar_cipher (string, number, encrypt = true)
   encrypt_string
 end
 
-encrypted_string = caesar_cipher('Eduardo Schneiders - noreply@gmail.com', 5)
+encrypted_string = caesar_cipher('O @zé ta bolado hoje', 5)
 decrypted_string = caesar_cipher(encrypted_string, 5, false)
 
 puts "Encrypted: #{encrypted_string}"
