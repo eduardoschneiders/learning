@@ -1,9 +1,9 @@
 def alphabet_down_case
-  ('a'..'z').to_a.push(alphabet_especial_caracters).flatten
+  ('a'..'z').to_a
 end
 
 def alphabet_up_case
-  ('A'..'Z').to_a.push(alphabet_especial_caracters).flatten
+  ('A'..'Z').to_a
 end
 
 def alphabet_especial_caracters
@@ -14,9 +14,10 @@ def caesar_cipher (string, number, encrypt = true)
   encrypt_string = ""
 
   string.split('').each do |letter|
-
     if alphabet_down_case.include?(letter)
       alphabet = alphabet_down_case
+    elsif alphabet_especial_caracters.include?(letter)
+      alphabet = alphabet_especial_caracters
     else
       alphabet = alphabet_up_case
     end
@@ -35,7 +36,7 @@ def caesar_cipher (string, number, encrypt = true)
   encrypt_string
 end
 
-encrypted_string = caesar_cipher('Eduardo Schneiders', 5)
+encrypted_string = caesar_cipher('Eduardo Schneiders - noreply@gmail.com', 5)
 decrypted_string = caesar_cipher(encrypted_string, 5, false)
 
 puts "Encrypted: #{encrypted_string}"
