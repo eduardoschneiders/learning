@@ -10,7 +10,7 @@ def alphabet_especial_caracters
   [' ', '!', '@', '#', '$', '%', '*', '(', ')', '_', '-', '+', '=', '[', '{', '}', ']', '/', '?', ';', ':', '.', '>', ',', '<']
 end
 
-def caesar_cipher (string, number)
+def caesar_cipher (string, number, encrypt = true)
   encrypt_string = ""
 
   string.split('').each do |letter|
@@ -23,7 +23,11 @@ def caesar_cipher (string, number)
 
     alphabet.each_with_index do |value, index|
       if letter == value
-        encrypt_string << alphabet[index - number]
+        index = encrypt ? index - number : index + number
+        if index >= alphabet.length
+          index = index - alphabet.length
+        end
+        encrypt_string << alphabet[index]
       end
     end
   end
@@ -31,4 +35,8 @@ def caesar_cipher (string, number)
   encrypt_string
 end
 
-puts caesar_cipher('Eduardo Schneiders', 5)
+encrypted_string = caesar_cipher('Eduardo Schneiders', 5)
+decrypted_string = caesar_cipher(encrypted_string, 5, false)
+
+puts "Encrypted: #{encrypted_string}"
+puts "Decrypted: #{decrypted_string}"
