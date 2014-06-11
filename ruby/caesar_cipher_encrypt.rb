@@ -4,7 +4,7 @@ def caesar_cipher(string, number, encrypt = true)
   string.split('').each do |letter|
     ord_letter = letter.ord
     index = encrypt ? ord_letter - number : ord_letter + number
-    encrypt_string << (index).chr
+    encrypt_string << (index).chr('UTF-8')
   end
   encrypt_string
 end
