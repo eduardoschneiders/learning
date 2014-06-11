@@ -26,21 +26,27 @@ def alphabet_accent_caracters_up_case
   alphabet_accent_caracters_down_case.map(&:upcase)
 end
 
-def caesar_cipher (string, number, encrypt = true)
+def which_alphabet(letter)
+  if alphabet_down_case.include?(letter)
+    alphabet = alphabet_down_case
+  elsif alphabet_especial_caracters.include?(letter)
+    alphabet = alphabet_especial_caracters
+  elsif alphabet_accent_caracters_down_case.include?(letter)
+    alphabet = alphabet_accent_caracters_down_case
+  elsif alphabet_accent_caracters_up_case.include?(letter)
+    alphabet = alphabet_accent_caracters_up_case
+  else
+    alphabet = alphabet_up_case
+  end
+
+  alphabet
+end
+
+def caesar_cipher(string, number, encrypt = true)
   encrypt_string = ""
 
   string.split('').each do |letter|
-    if alphabet_down_case.include?(letter)
-      alphabet = alphabet_down_case
-    elsif alphabet_especial_caracters.include?(letter)
-      alphabet = alphabet_especial_caracters
-    elsif alphabet_accent_caracters_down_case.include?(letter)
-      alphabet = alphabet_accent_caracters_down_case
-    elsif alphabet_accent_caracters_up_case.include?(letter)
-      alphabet = alphabet_accent_caracters_up_case
-    else
-      alphabet = alphabet_up_case
-    end
+    alphabet = which_alphabet(letter)
 
     alphabet.each_with_index do |value, index|
       if letter == value
