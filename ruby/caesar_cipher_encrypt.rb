@@ -1,11 +1,10 @@
 def caesar_cipher(string, number, encrypt = true)
-  encrypt_string = ""
-
-  string.split('').each do |letter|
+  encrypt_string = string.each_char.map do |letter|
     ord_letter = letter.ord
     index = encrypt ? ord_letter - number : ord_letter + number
-    encrypt_string << (index).chr('UTF-8')
-  end
+    index.chr
+  end.join
+
   encrypt_string
 end
 
