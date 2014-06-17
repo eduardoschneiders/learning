@@ -4,3 +4,4 @@ require 'pry' if ENV['APP_ENV'] == 'debug' # add `binding.pry` wherever you need
 
 require 'caesar_cipher_encrypt'
 require 'stock_picker'
+require 'substrings'
