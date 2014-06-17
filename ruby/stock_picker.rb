@@ -4,8 +4,8 @@
 
 def stock_picker(prices)
   current_price_day = 0
-  better_profit = 0
-  better_days = []
+  best_profit = 0
+  best_days = []
 
   prices.each do |price|
     current_buy_price = price
@@ -17,13 +17,13 @@ def stock_picker(prices)
     if best_price_to_sell && current_buy_price
       profit = best_price_to_sell - current_buy_price
 
-      if profit > better_profit
-        better_profit = profit
-        better_days = [current_price_day, best_day_to_sell]
+      if profit > best_profit
+        best_profit = profit
+        best_days = [current_price_day, best_day_to_sell]
       end
     end
     current_price_day += 1
   end
 
-  better_days
+  best_days
 end
