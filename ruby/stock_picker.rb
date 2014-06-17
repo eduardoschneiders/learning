@@ -7,7 +7,7 @@ def stock_picker(prices)
   best_profit = 0
   best_days = []
 
-  prices.each do |price|
+  prices.each_with_index do |price, current_price_day|
     current_buy_price = price
 
     prices_to_sell = prices[current_price_day + 1..prices.length]
@@ -22,7 +22,6 @@ def stock_picker(prices)
         best_days = [current_price_day, best_day_to_sell]
       end
     end
-    current_price_day += 1
   end
 
   best_days
