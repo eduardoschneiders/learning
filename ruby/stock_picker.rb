@@ -3,7 +3,6 @@
 
 
 def stock_picker(prices)
-  current_price_day = 0
   best_profit       = 0
   best_days         = []
 
