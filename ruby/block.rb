@@ -31,3 +31,28 @@ total = [5, 15, 20].total do |numero|
 end
 
 puts total
+
+class Banco
+  def initialize(contas)
+    @contas = contas
+  end
+
+  def status
+    saldo = 0
+
+    for conta in @contas
+      saldo += conta
+
+      yield saldo if block_given?
+    end
+
+    saldo
+  end
+end
+
+banco = Banco.new([100, 200, 300])
+banco.status do |saldo_parcial|
+  puts "Parcial: #{saldo_parcial}"
+end
+
+puts "Total: #{banco.status}"
