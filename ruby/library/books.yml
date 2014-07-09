@@ -1,0 +1,25 @@
+---
+- !ruby/object:Book
+  title: Book title 1
+  author: Author 1
+  category: :category_1
+- !ruby/object:Book
+  title: Book title 2
+  author: Author 2
+  category: :category_2
+- !ruby/object:Book
+  title: Book title 3
+  author: Author 3
+  category: :category_3
+- !ruby/object:Book
+  title: Book title 4
+  author: Author 4
+  category: :development
+- !ruby/object:Book
+  title: Book title 5
+  author: Author 5
+  category: :development
+- !ruby/object:Book
+  title: test
+  author: author
+  category: :category
