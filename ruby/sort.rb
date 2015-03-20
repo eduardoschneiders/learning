@@ -1,39 +1,15 @@
 #!/usr/bin/env ruby
-class Sort
-  attr_accessor :length, :max, :numbers, :begin_time, :end_time
 
-  def initialize(length = 10, max = 20)
-    @length = length
-    @max = max
-
-    rand
-  end
-
+module BubbleSort
   def bubble_sort
-    @begin_time = Time.now
-
     @numbers.each do
       @numbers.each_with_index do |number, index|
         try_switch(index)
       end
     end
-
-    @end_time = Time.now
-  end
-
-  def duration
-    puts Time.at(@end_time - @begin_time).utc.strftime "%H:%M:%S"
-  end
-
-  def print
-    puts @numbers
   end
 
   private
-
-  def rand
-    @numbers = @length.times.map { Random.new.rand(@max) }
-  end
 
   def try_switch(index)
     current_number = @numbers[index]
@@ -46,7 +22,73 @@ class Sort
   end
 end
 
-bubble_sort = Sort.new 10000
+module QuickSort
+  def quick_sort(numbers = @numbers)
+    return numbers if numbers.length <= 1
 
-bubble_sort.bubble_sort
-bubble_sort.duration
+    pivot = numbers.last
+    less = []
+    equal = []
+    greater = []
+
+    numbers.each do |number|
+      if number < pivot
+        less << number
+      elsif number > pivot
+        greater << number
+      else
+        equal << number
+      end
+    end
+
+    less = quick_sort(less)
+    greater = quick_sort(greater)
+
+    less.concat(equal).concat(greater)
+  end
+end
+
+class Sort
+  include BubbleSort
+  include QuickSort
+  attr_accessor :length, :max, :numbers, :begin_time, :end_time
+
+  def initialize(length = 10, max = 20)
+    @length = length
+    @max = max
+
+    rand_numbers
+  end
+
+  def benchmark
+    @begin_time = Time.now
+    yield
+    @end_time = Time.now
+
+    puts duration
+  end
+
+  def duration
+    puts (@end_time - @begin_time)
+  end
+
+  private
+
+  def rand_numbers
+    puts 'Generating numbers ...'
+    random = Random.new
+    @numbers = @length.times.map { random.rand(@max) }
+  end
+end
+
+sort = Sort.new 1000, 100
+
+sort.benchmark do
+  puts 'Bubble_sort: '
+  sort.bubble_sort
+end
+
+sort.benchmark do
+  puts 'Quick_sort: '
+  sort.quick_sort
+end
