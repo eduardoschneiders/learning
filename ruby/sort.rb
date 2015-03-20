@@ -69,7 +69,7 @@ class Sort
   end
 
   def duration
-    puts (@end_time - @begin_time)
+    puts Time.at(@end_time - @begin_time).utc.strftime('%H:%M:%S:%L')
   end
 
   private
@@ -81,7 +81,7 @@ class Sort
   end
 end
 
-sort = Sort.new 1000, 100
+sort = Sort.new 1_000, 100
 
 sort.benchmark do
   puts 'Bubble_sort: '
