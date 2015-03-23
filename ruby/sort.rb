@@ -75,20 +75,57 @@ class Sort
   private
 
   def rand_numbers
-    puts 'Generating numbers ...'
     random = Random.new
     @numbers = @length.times.map { random.rand(@max) }
   end
 end
 
-sort = Sort.new 1_000, 100
+class Benchmark
+  attr_accessor :lengths, :results
 
-sort.benchmark do
-  puts 'Bubble_sort: '
+  def initialize(lengths = [10])
+    @lengths = lengths
+    @results = {}
+  end
+
+  def bench
+    @lengths.each do |length|
+      begin_time = Time.now
+      yield length
+      end_time = Time.now
+      @results[length] = end_time - begin_time
+    end
+  end
+
+  def results
+    @results
+  end
+end
+
+benchmark = Benchmark.new([50, 1_000, 5_000, 10_000])
+
+benchmark.bench do |length|
+  sort = Sort.new length
   sort.bubble_sort
 end
 
-sort.benchmark do
-  puts 'Quick_sort: '
+bubble_sort_results = benchmark.results.values
+
+benchmark.bench do |length|
+  sort = Sort.new length
   sort.quick_sort
 end
+
+quick_sort_results = benchmark.results.values
+
+require 'gruff'
+g = Gruff::Line.new
+g.title = 'Bubble sort Vs Quick sort'
+labels = Hash.new
+i = 0
+benchmark.results.keys.map { |key| labels[i] = key.to_s; i += 1  }
+g.labels = labels
+g.data :BubbleSort, bubble_sort_results
+g.data :QuickSort, quick_sort_results
+
+g.write('bubble_vs_quick.png')
