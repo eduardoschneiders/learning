@@ -4,14 +4,14 @@
 mkdir app_deploy && cd app_deploy
 git init --bare
 # Edit your hook files
-wget file_path
+wget -O hooks/post-receive https://raw.githubusercontent.com/eduardoschneiders/learning/master/bash/deploy/app_deploy/hooks/post-receive
 # Add execution permission on them
 sudo chmod +x hooks/post-receive
 
 # CLIENT_SIDE
 
 # Create ssh config
-wget file_path
+wget https://raw.githubusercontent.com/eduardoschneiders/learning/master/bash/deploy/config
 # Add a new remote to project
 git remote add production ec2:app_deploy
 # Push changes to new remote
