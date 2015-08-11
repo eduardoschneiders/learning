@@ -1,0 +1,4 @@
+Host ec2
+Hostname 52.27.89.17
+User ubuntu
+IdentityFile ~/.ssh/FirstInstance.pem

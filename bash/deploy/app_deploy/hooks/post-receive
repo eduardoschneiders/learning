@@ -1,0 +1,25 @@
+#!/bin/bash -l
+
+GIT_DIR=/home/ubuntu/app_deploy
+WORK_TREE=/data/app
+
+export APP_DATABASE_USERNAME=user
+export APP_DATABASE_PASSWORD=password
+export RAILS_ENV=production
+
+while read old_rev newrev ref
+do
+  if [[ $ref =~ .*/master$ ]]; then
+    echo "Push on master"
+    mkdir -p $WORK_TREE
+    git --work-tree=$WORK_TREE --git-dir=$GIT_DIR checkout -f
+
+    cd $WORK_TREE
+    bundle install
+    rake db:create
+    rake db:migrate
+    rake assets:precompile
+
+    echo "Git hooks deploy complete"
+  fi
+done
