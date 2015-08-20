@@ -1,0 +1,7 @@
+source 'http://rubygems.org'
+
+gem 'twitter'
+gem 'gchartrb'
+gem 'dotenv'
+gem 'pry'
+gem 'pry-nav'
