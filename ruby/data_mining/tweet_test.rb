@@ -78,4 +78,24 @@ GoogleChart::PieChart.new('650x350', "Time Zones", false ) do |pc|
   system("xdg-open", pc.to_url)
 end
 
-require 'pry'; binding.pry
+user_tweets = client.user_timeline(username)
+weekdays = Hash.new
+
+user_tweets.each do |t|
+  weekday = t.created_at.strftime('%A')
+
+  if weekdays.has_key? weekday
+    weekdays[weekday] += 1
+  else
+    weekdays[weekday] = 1
+  end
+end
+
+GoogleChart::BarChart.new('300x200', username, :vertical, false) do |bc|
+  weekdays.each do |day, count|
+    bc.data day, [count], '00000f'
+  end
+
+  puts bc.to_url
+  system("xdg-open", bc.to_url)
+end
