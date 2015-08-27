@@ -4,14 +4,44 @@ require 'rubygems'
 require 'twitter'
 require 'google_chart'
 require 'dotenv'
+require 'pry'
 
 Dotenv.load
 
 client = Twitter::REST::Client.new do |config|
-    config.consumer_key    = ENV['DM_TWITTER_CONSUMER_KEY']
-    config.consumer_secret = ENV['DM_TWITTER_CONSUMER_SECRET']
+  config.consumer_key    = ENV['DM_TWITTER_CONSUMER_KEY']
+  config.consumer_secret = ENV['DM_TWITTER_CONSUMER_SECRET']
+  config.access_token        = ENV['DM_TWITTER_ACCESS_TOKEN']
+  config.access_token_secret = ENV['DM_TWITTER_ACCESS_TOKEN_SECRET']
 end
 username = 'eduschneiders'
+username = 'twitterdev'
+
+cursor = -1
+results = []
+loop do
+  begin
+    binding.pry
+    cf = client.followers(username, { cursor: cursor })
+    results << cf.map do |e|
+      e.screen_name
+    end
+    binding.pry
+  rescue Twitter::Error::TooManyRequests => error
+    binding.pry
+    if cf
+      cursor  = cf.attrs[:next_cursor]
+    end
+    time = error.rate_limit.reset_in
+    puts "Sleep for #{time} ---------------------"
+    sleep time
+    puts 'restarting ------------'
+    retry
+  end
+  break if cursor <= 0
+end
+
+exit
 user = client.user(username)
 
 unless user.protected?
