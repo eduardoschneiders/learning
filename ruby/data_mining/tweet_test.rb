@@ -17,6 +17,34 @@ end
 username = 'eduschneiders'
 username = 'twitterdev'
 
+file = File.new('data.json', 'r')
+result = ""
+while line = file.gets
+  result += line
+end
+
+tree = JSON.parse(result)['followers_tree']
+text = ""
+
+graph = File.new('Graph.dot', 'w')
+graph.puts "graph followers {"
+graph.puts "  node [ fontname=Arial, fontsize=6 ];"
+tree.each do |f|
+  f['followers'].each do |f2|
+    graph.puts "  \"#{f['name']}\" -- \"#{f2['name']}\""
+    f2['followers'].each do |f3|
+      graph.puts "    \"#{f2['name']}\" -- \"#{f3['name']}\""
+    end
+  end
+end
+graph.puts "}"
+
+
+
+
+
+exit
+
 cursor = -1
 results = []
 loop do

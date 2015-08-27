@@ -1,0 +1,48 @@
+{
+  "followers_tree": [
+    {
+      "name": "master",
+      "followers": [
+        {
+          "name": "User 1",
+          "followers": [
+            { "name": "User 1 The one" },
+            { "name": "User 1 The second" },
+            { "name": "User 1 The third" }
+          ]
+        },
+        {
+          "name": "user 2",
+          "followers": [
+            { "name": "user 2 The one" },
+            { "name": "user 2 The second" },
+            { "name": "user 2 The third" },
+            { "name": "user 2 The fouth" }
+          ]
+        },
+        {
+          "name": "User 3",
+          "followers": [
+            { "name": "User 3 The one" },
+            { "name": "User 3 The second" },
+            { "name": "User 3 The third" },
+            { "name": "User 3 The fouth" }
+          ]
+        },
+        {
+          "name": "User 4",
+          "followers": [
+            { "name": "User 4 aer" },
+            { "name": "User 4 degd" },
+            { "name": "User 4 erhrtd" },
+            { "name": "User 4 xpto" },
+            { "name": "User 4 qwer" },
+            { "name": "User 4 abcr" },
+            { "name": "User 4 poi" },
+            { "name": "User 4 qwera" }
+          ]
+        }
+      ]
+    }
+  ]
+}
