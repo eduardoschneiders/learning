@@ -25,6 +25,49 @@ while line = file.gets
 end
 
 tree = JSON.parse(result)['followers_tree']
+all_followers = []
+
+
+tree.each do |main|
+  puts main['name']
+  main['followers'].each do |followers1|
+    followers1['followers'].each do |followers2|
+      all_followers << followers2['name']
+    end
+  end
+end
+
+rank_following = all_followers.select do |e| 
+  all_followers.count(e) > 1 
+end.group_by do |e| 
+  e 
+end.map do |e|
+  { name: e.first, count: e[1].count }
+end.sort_by do |e|
+  e[:count]
+end.reverse
+
+
+rank_following.each do |f|
+  puts "#{f[:name]} -> followers: #{f[:count]}"
+end
+ 
+exit
+
+
+
+
+
+file = File.new('results.json', 'r')
+result = ""
+while line = file.gets
+  result += line
+end
+
+
+
+
+tree = JSON.parse(result)['followers_tree']
 text = ""
 
 graph = File.new('Graph.dot', 'w')
