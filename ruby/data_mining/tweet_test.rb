@@ -15,9 +15,10 @@ client = Twitter::REST::Client.new do |config|
   config.access_token_secret = ENV['DM_TWITTER_ACCESS_TOKEN_SECRET']
 end
 username = 'eduschneiders'
-username = 'twitterdev'
+# username = 'twitterdev'
 
-file = File.new('data.json', 'r')
+# file = File.new('data.json', 'r')
+file = File.new('results.json', 'r')
 result = ""
 while line = file.gets
   result += line
@@ -32,31 +33,56 @@ graph.puts "  node [ fontname=Arial, fontsize=6 ];"
 tree.each do |f|
   f['followers'].each do |f2|
     graph.puts "  \"#{f['name']}\" -- \"#{f2['name']}\""
-    f2['followers'].each do |f3|
-      graph.puts "    \"#{f2['name']}\" -- \"#{f3['name']}\""
+    if f2['followers'].any?
+      f2['followers'].each do |f3|
+        graph.puts "    \"#{f2['name']}\" -- \"#{f3['name']}\""
+      end
     end
   end
 end
 graph.puts "}"
 
 
-
-
-
 exit
 
-cursor = -1
+
+
+cursor = cursor2 = -1
 results = []
+file = File.new('results.json', 'w')
+
 loop do
   begin
-    binding.pry
     cf = client.followers(username, { cursor: cursor })
-    results << cf.map do |e|
-      e.screen_name
+    cf.each do |e|
+      puts e.screen_name
+
+      person =  { 
+        name: e.screen_name,
+        followers: []
+      }
+
+      if e.followers_count < 100
+        begin
+          cf2 = client.followers(e.screen_name, { cursor: cursor2 })
+          cf2.each do |e2|
+            person[:followers] << { name: e2.screen_name }
+            puts "#{e.screen_name}---- #{e2.screen_name}"
+          end
+        rescue Twitter::Error::TooManyRequests => error
+          if cf2
+            cursor2  = cf2.attrs[:next_cursor]
+          end
+          time = error.rate_limit.reset_in
+          puts "------Sleep for #{time} ---------------------"
+          sleep time
+          puts 'restarting ------------'
+          retry
+        end
+      end
+      results << person
     end
-    binding.pry
   rescue Twitter::Error::TooManyRequests => error
-    binding.pry
     if cf
       cursor  = cf.attrs[:next_cursor]
     end
@@ -69,6 +95,10 @@ loop do
   break if cursor <= 0
 end
 
+
+binding.pry
+file.puts results.to_json
+binding.pry
 exit
 user = client.user(username)
 
