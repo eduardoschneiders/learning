@@ -2,6 +2,7 @@ GEM
   remote: http://rubygems.org/
   specs:
     addressable (2.3.8)
+    bson (3.2.1)
     buftok (0.2.0)
     coderay (1.1.0)
     dotenv (2.0.1)
@@ -9,6 +10,7 @@ GEM
     faraday (0.9.1)
       multipart-post (>= 1.2, < 3)
     gchartrb (0.8)
+    gemcutter (0.7.1)
     http (0.6.4)
       http_parser.rb (~> 0.6.0)
     http_parser.rb (0.6.0)
@@ -16,6 +18,9 @@ GEM
     memoizable (0.4.2)
       thread_safe (~> 0.3, >= 0.3.1)
     method_source (0.8.1)
+    mongo (2.0.6)
+      bson (~> 3.0)
+    mongo_ext (0.19.3)
     multipart-post (2.0.0)
     naught (1.0.0)
     pry (0.10.1)
@@ -45,6 +50,9 @@ PLATFORMS
 DEPENDENCIES
   dotenv
   gchartrb
+  gemcutter
+  mongo
+  mongo_ext
   pry
   pry-nav
   twitter

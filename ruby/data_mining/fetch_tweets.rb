@@ -9,6 +9,50 @@ client = Twitter::REST::Client.new do |config|
   config.access_token_secret = ENV['DM_TWITTER_ACCESS_TOKEN_SECRET']
 end
 
+client = Mongo::Client.new(['localhost:27017'], database: 'data_mining_test')
+binding.pry
+data = client[:data]
+
+
+
+file = File.read('results/results_following.json')
+followings = JSON.parse(file)
+binding.pry
+
+followings['following_tree']['following'].each do |following|
+  all_twitts = client.get_all_tweets(following['name'])
+end
+
+def collect_with_max_id(collection=[], max_id=nil, &block)
+  response = yield(max_id)
+  collection += response
+  response.empty? ? collection.flatten : collect_with_max_id(collection, response.last.id - 1, &block)
+end
+
+def client.get_all_tweets(user)
+  collect_with_max_id do |max_id|
+    begin
+      options = { count: 200, include_rts: true }
+      options[:max_id] = max_id unless max_id.nil?
+      user_timeline(user, options)
+    rescue Twitter::Error::TooManyRequests => error
+      binding.pry
+      time = error.rate_limit.reset_in
+      puts "Sleep for #{time} ---------------------"
+      sleep time
+      puts 'restarting ------------'
+      retry
+    end
+  end
+end
+
+
+exit
+
+
+
+
+
 username = 'eduschneiders'
 
 
