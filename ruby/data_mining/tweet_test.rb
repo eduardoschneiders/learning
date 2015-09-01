@@ -17,6 +17,87 @@ end
 username = 'eduschneiders'
 # username = 'twitterdev'
 
+
+
+
+def collect_with_max_id(collection=[], max_id=nil, &block)
+  response = yield(max_id)
+  collection += response
+  response.empty? ? collection.flatten : collect_with_max_id(collection, response.last.id - 1, &block)
+end
+
+def client.get_all_tweets(user)
+  collect_with_max_id do |max_id|
+    begin
+      options = { count: 200, include_rts: true }
+      options[:max_id] = max_id unless max_id.nil?
+      user_timeline(user, options)
+    rescue Twitter::Error::TooManyRequests => error
+      binding.pry
+      time = error.rate_limit.reset_in
+      puts "Sleep for #{time} ---------------------"
+      sleep time
+      puts 'restarting ------------'
+      retry
+    end
+  end
+end
+
+
+all_twitts = client.get_all_tweets(username)
+file = File.new('tw.txt', 'w')
+all_twitts.each do |t|
+  file.puts t.text
+end
+binding.pry
+exit
+
+cursor = cursor2 = -1
+results = []
+file = File.new('results_one_level.json', 'w')
+
+loop do
+  begin
+    cf = client.followers(username, { cursor: cursor })
+    cf.each do |e|
+      puts e.screen_name
+
+      person =  { 
+        name: e.screen_name,
+        followers: [],
+        twitter_counts: 0
+      }
+      cursor2 = 0
+      total = 0
+
+      begin
+        client.get_all_tweets(e.screen_name, cursor2)
+      rescue
+      end
+      puts total
+      person[:twitter_counts] = total
+      results << person
+    end
+  rescue Twitter::Error::TooManyRequests => error
+    if cf
+      cursor  = cf.attrs[:next_cursor]
+    end
+    time = error.rate_limit.reset_in
+    puts "Sleep for #{time} ---------------------"
+    sleep time
+    puts 'restarting ------------'
+    retry
+  end
+  break if cursor <= 0
+end
+
+file.puts results.to_json
+exit
+
+
+
+
+
 # file = File.new('data.json', 'r')
 file = File.new('results.json', 'r')
 result = ""
@@ -102,7 +183,8 @@ loop do
 
       person =  { 
         name: e.screen_name,
-        followers: []
+        followers: [],
+        twitter_counts: client.user_timeline(e.screen_name).count,
       }
 
       if e.followers_count < 100
