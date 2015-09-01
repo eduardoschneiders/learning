@@ -1,12 +1,6 @@
 #!/usr/bin/env ruby
 
-require 'rubygems'
-require 'twitter'
-require 'google_chart'
-require 'dotenv'
-require 'pry'
-
-Dotenv.load
+require_relative 'config'
 
 client = Twitter::REST::Client.new do |config|
   config.consumer_key    = ENV['DM_TWITTER_CONSUMER_KEY']
@@ -15,8 +9,8 @@ client = Twitter::REST::Client.new do |config|
   config.access_token_secret = ENV['DM_TWITTER_ACCESS_TOKEN_SECRET']
 end
 username = 'eduschneiders'
-# username = 'twitterdev'
 
+binding.pry
 
 
 
