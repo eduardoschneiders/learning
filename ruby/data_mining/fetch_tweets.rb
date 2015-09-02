@@ -9,6 +9,33 @@ client = Twitter::REST::Client.new do |config|
   config.access_token_secret = ENV['DM_TWITTER_ACCESS_TOKEN_SECRET']
 end
 
+username = 'eduschneiders'
+
+client_db = Mongo::Client.new(['localhost:27017'], database: 'data_mining_test_bkp')
+
+following_tree = client_db[:following_tree]
+
+the_master = following_tree.find({ name: username })
+the_master.first[:following].each do |f|
+  puts f[:name]
+
+
+
+  binding.pry
+
+  
+  following_tree.find({ name: username, following: { name: f[:name] } }).update_one(
+    { $set => {"following.0.asfs" => 'teste' }}
+  )
+  binding.pry
+end
+
+
+
+
+exit
+
+
 client = Mongo::Client.new(['localhost:27017'], database: 'data_mining_test')
 binding.pry
 data = client[:data]
