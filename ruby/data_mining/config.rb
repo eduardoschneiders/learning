@@ -5,7 +5,5 @@ require 'dotenv'
 require 'pry'
 require 'mongo'
 
-binding.pry
 Dotenv.load
-
 

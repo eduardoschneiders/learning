@@ -13,8 +13,17 @@ username = 'eduschneiders'
 
 
 cursor = cursor2 = -1
-results = []
-file = File.new('results/results.json', 'w')
+the_master = { 
+  name: username,
+  following:[]
+}
+
+client_db = Mongo::Client.new(['localhost:27017'], database: 'data_mining_test')
+
+following_tree = client_db[:following_tree]
+following_tree.insert_one(the_master)
+
+the_master = following_tree.find({ name: username })
 
 def breaking(time)
   while time > 0
@@ -64,7 +73,7 @@ loop do
       if e.friends_count < 1000
         person[:following] = following(e.screen_name, client)
       end
-      results << person
+      the_master.update_one("$push" => { following: person })
     end
   rescue Twitter::Error::TooManyRequests => error
     if cf
@@ -83,4 +92,3 @@ loop do
   break if cursor <= 0 || cf.attrs[:next_cursor] <= 0
 end
 
-file.puts results.to_json
