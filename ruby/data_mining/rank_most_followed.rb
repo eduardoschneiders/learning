@@ -37,7 +37,8 @@ the_master_obj = {
   name: username,
   rank_following: []
 }
-puts 'Done'
+
+puts "\nDone"
 
 rank_following = client_db[:rank_following]
 the_master = rank_following.find({ name: username })
