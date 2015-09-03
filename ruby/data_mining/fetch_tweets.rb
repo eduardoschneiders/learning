@@ -97,7 +97,7 @@ following.each do |e|
       rescue Twitter::Error::TooManyRequests => error
         time = error.rate_limit.reset_in
         breaking(time)
-      rescue Twitter::Error::Forbidden
+      rescue Twitter::Error::Forbidden, Twitter::Error::NotFound
         next
       end
     end
@@ -111,7 +111,7 @@ following.each do |e|
         rescue Twitter::Error::TooManyRequests => error
           time = error.rate_limit.reset_in
           breaking(time)
-        rescue Twitter::Error::Forbidden
+        rescue Twitter::Error::Forbidden, Twitter::Error::NotFound
           next
         end
       end
