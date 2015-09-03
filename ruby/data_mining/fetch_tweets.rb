@@ -20,6 +20,29 @@ def update_db(the_master, following)
   )
 end
 
+def collect_with_max_id(collection=[], max_id=nil, &block)
+  response = yield(max_id)
+  collection += response
+  response.empty? ? collection.flatten : collect_with_max_id(collection, response.last.id - 1, &block)
+end
+
+def client.get_all_tweets(user)
+  collect_with_max_id do |max_id|
+    begin
+      options = { count: 200, include_rts: true }
+      options[:max_id] = max_id unless max_id.nil?
+      user_timeline(user, options)
+    rescue Twitter::Error::TooManyRequests => error
+      binding.pry
+      time = error.rate_limit.reset_in
+      puts "Sleep for #{time} ---------------------"
+      sleep time
+      puts 'restarting ------------'
+      retry
+    end
+  end
+end
+
 
 
 following_tree = client_db[:following_tree]
@@ -36,7 +59,7 @@ following.each do |e|
       text: t.text, 
       tweet_id: t.id,
       created_at: t.created_at, 
-      hashtags: t.hashtags,
+      hashtags: t.hashtags.map(&:text),
       links: t.uris.map { |u| u.url.to_s },
       retweet_count: t.retweet_count,
       user_mentions: t.user_mentions.map(&:screen_name),
@@ -44,18 +67,12 @@ following.each do |e|
     }
   end
 
-  binding.pry
   e[:tweets] = all_tweets
   puts "Name: #{e[:name]}"
   puts "Tweets:"
   tweets.each do |t|
-    puts "      #{t}"
+    puts "      #{t.text}"
   end
 
   update_db(the_master, following)
-  binding.pry
 end
-  
-
-
-exit
