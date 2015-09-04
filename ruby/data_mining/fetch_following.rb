@@ -55,7 +55,7 @@ def following(username, client)
     begin
       cfollowing = client.following(username, { cursor: cursor, count: 300 })
       cfollowing.each do |e|
-        following << { name: e.screen_name }
+        following << { name: e.screen_name, tweets_count: e.tweets_count }
         puts "#{username}---- #{e.screen_name}"
       end
     rescue Twitter::Error::TooManyRequests => error
@@ -82,6 +82,7 @@ loop do
         puts e.screen_name
         person =  { 
           name: e.screen_name,
+          tweets_count: e.tweets_count,
           following: []
         }
 
