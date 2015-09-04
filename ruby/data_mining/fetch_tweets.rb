@@ -67,7 +67,6 @@ def breaking(time)
 end
 
 
-
 following_tree = client_db[:following_tree]
 the_master = following_tree.find({ name: username })
 following = the_master.first[:following]
@@ -98,6 +97,8 @@ following.each do |e|
       rescue Twitter::Error::TooManyRequests => error
         time = error.rate_limit.reset_in
         breaking(time)
+      rescue Twitter::Error::Forbidden, Twitter::Error::NotFound
+        next
       end
     end
 
@@ -110,6 +111,8 @@ following.each do |e|
         rescue Twitter::Error::TooManyRequests => error
           time = error.rate_limit.reset_in
           breaking(time)
+        rescue Twitter::Error::Forbidden, Twitter::Error::NotFound
+          next
         end
       end
     end
