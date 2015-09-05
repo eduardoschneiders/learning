@@ -28,7 +28,7 @@ client_db = Mongo::Client.new(['localhost:27017'], database: 'data_mining_test')
 
 def percentage(done, total)
   percent = (done.to_f/total*100).round(0)
-  a = percent.to_i.times.map { '-' }.join
+  a = percent.to_i.times.map { '=' }.join
   b = (100 - percent.to_i).times.map { ' ' }.join
   print "Percentage: #{percent}% -> #{done} of #{total}"
   print "     [#{a}#{b}] \r"
@@ -61,7 +61,7 @@ end
 
 # r.sort_by { |name, prop| prop[:count] }.reverse.map { |e| { name: e[0], count: e[1][:count], followers: e[1][:followers] } }
 
-puts "\nOrdering element and preparing record to DB..."
+puts "\n\nOrdering element and preparing record to DB..."
 total = r.count
 i = 0
 rank_following_results = r.sort_by do |name, prop| 
@@ -75,7 +75,7 @@ end.select do |e|
 end
 
 
-puts "\nDone! Go check the Database"
+puts "\n\nDone! Go check the Database"
 
 
 
