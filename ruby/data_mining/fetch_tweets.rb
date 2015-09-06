@@ -21,24 +21,27 @@ def update_db(the_master, following)
   )
 end
 
-def collect_with_max_id(collection=[], max_id=nil, &block)
+def collect_with_max_id(collection=[], max_id=nil, max, &block)
   response = yield(max_id)
   collection += response
-  response.empty? ? collection.flatten : collect_with_max_id(collection, response.last.id - 1, &block)
+
+  if response.empty? || max <= 0
+    collection.flatten 
+  else
+    collect_with_max_id(collection, response.last.id - 1, max - 1,  &block)
+  end
 end
 
 def client.get_all_tweets(user)
   collect_with_max_id do |max_id|
     begin
-      options = { count: 200, include_rts: true }
+      options = { max: 3, count: 200, include_rts: true }
       options[:max_id] = max_id unless max_id.nil?
+
       user_timeline(user, options)
     rescue Twitter::Error::TooManyRequests => error
-      binding.pry
       time = error.rate_limit.reset_in
-      puts "Sleep for #{time} ---------------------"
-      sleep time
-      puts 'restarting ------------'
+      breaking(time)
       retry
     end
   end
@@ -77,9 +80,8 @@ end
 
 
 
-resources_db = client_db[:resources]
-the_master = resources_db.find({ name: username })
-resources = the_master.first[:resources]
+resources = client_db[:resources].find
+
 
 
 total = resources.count
@@ -90,7 +92,8 @@ resources.each do |r|
   percentage(i, total)
   unless r[:tweets]
     begin
-      tweets = client.user_timeline(r[:name])
+      # tweets = client.user_timeline(r[:name])
+      tweets = client.get_all_tweets(r[:name])
 
       #tweet.attrs can be used insted of this object
       #But it weights much more
@@ -99,7 +102,7 @@ resources.each do |r|
       r[:tweets] = all_tweets
       puts "Name1: #{r[:name]}"
 
-      update_db(the_master, resources)
+      client_db[:resources].find(name: r[:name]).update_one({ "$set" => { tweets: all_tweets } })
     rescue Twitter::Error::TooManyRequests => error
       time = error.rate_limit.reset_in
       breaking(time)

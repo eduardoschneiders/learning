@@ -13,15 +13,14 @@ the_master = rank_following.find({ name: username })
 following = the_master.first[:rank_following]
 
 names = following.map { |f| [f[:name]] + f[:followers]}.flatten.uniq
-resources_obj = { name: username,  resources: names.map { |n| { name: n } } }
+resources_obj = names.map { |n| { name: n } }
 
 
 resources = client_db[:resources]
 the_master = resources.find({ name: username })
 
-if the_master.count == 0
-  binding.pry
-  resources.insert_one(resources_obj)
+resources_obj.each do |r|
+  resources.insert_one(r)
 end
 
 
