@@ -10,7 +10,7 @@ client = Twitter::REST::Client.new do |config|
 end
 
 username = 'eduschneiders'
-todo = 'count_tw'
+todo = 'fetch_tw'
 
 
 client_db = Mongo::Client.new(['localhost:27017'], database: 'data_mining_test')
@@ -86,6 +86,33 @@ following.each do |e|
       puts "Tweets:"
       tweets.each do |t|
         puts "      #{t.text}"
+      end
+    end
+
+    e[:following].each do |e2|
+      unless e2[:tweets]
+        begin
+          tweets = client.user_timeline(e2[:name])
+          
+          #tweet.attrs can be used insted of this object
+          #But it weights much more
+          all_tweets = tweets.map { |t| build_tweet(t) }
+
+          e2[:tweets] = all_tweets
+          puts "Name1: #{e[:name]} -> Name2: #{e2[:name]}"
+
+          update_db(the_master, following)
+        rescue Twitter::Error::TooManyRequests => error
+          time = error.rate_limit.reset_in
+          breaking(time)
+          retry
+        rescue Twitter::Error::Unauthorized
+          next
+        rescue Twitter::Error::RequestTimeout
+          puts '-------------- time out'
+          sleep 10
+          retry
+        end
       end
     end
   elsif todo == 'count_tw'
