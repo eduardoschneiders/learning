@@ -17,7 +17,7 @@ client_db = Mongo::Client.new(['localhost:27017'], database: 'data_mining_test')
 
 def update_db(the_master, following)
   the_master.update_one(
-    { "$set" => { following: following }}
+    { "$set" => { resources: following }}
   )
 end
 
@@ -58,14 +58,63 @@ def build_tweet(t)
 end
 
 def breaking(time)
+  puts "\n"
   while time > 0
     print "Sleeping for #{time} seconds ---------------------\r"
     sleep 1
     time -= 1
   end
-  puts 'restarting ------------'
+  puts '\nrestarting ------------'
 end
 
+def percentage(done, total)
+  percent = (done.to_f/total*100).round(0)
+  a = percent.to_i.times.map { '=' }.join
+  b = (100 - percent.to_i).times.map { ' ' }.join
+  print "Percentage: #{percent}% -> #{done} of #{total}"
+  print "     [#{a}#{b}] \r"
+end
+
+
+
+resources_db = client_db[:resources]
+the_master = resources_db.find({ name: username })
+resources = the_master.first[:resources]
+
+
+total = resources.count
+i = 0
+
+resources.each do |r|
+  i += 1
+  percentage(i, total)
+  unless r[:tweets]
+    begin
+      tweets = client.user_timeline(r[:name])
+
+      #tweet.attrs can be used insted of this object
+      #But it weights much more
+      all_tweets = tweets.map { |t| build_tweet(t) }
+
+      r[:tweets] = all_tweets
+      puts "Name1: #{r[:name]}"
+
+      update_db(the_master, resources)
+    rescue Twitter::Error::TooManyRequests => error
+      time = error.rate_limit.reset_in
+      breaking(time)
+      retry
+    rescue Twitter::Error::Unauthorized, Twitter::Error::NotFound
+      next
+    rescue Twitter::Error::RequestTimeout
+      puts '\n-------------- time out'
+      sleep 10
+      retry
+    end
+  end
+end
+
+exit
 
 following_tree = client_db[:following_tree]
 the_master = following_tree.find({ name: username })
