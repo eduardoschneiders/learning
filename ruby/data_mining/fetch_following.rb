@@ -13,10 +13,7 @@ username = 'eduschneiders'
 
 
 cursor = cursor2 = -1
-the_master = { 
-  name: username,
-  following:[]
-}
+
 
 client_db = Mongo::Client.new(['localhost:27017'], database: 'data_mining_test')
 
@@ -24,6 +21,11 @@ following_tree = client_db[:following_tree]
 the_master = following_tree.find({ name: username })
 
 if the_master.count == 0
+  the_master = { 
+    name: username,
+    following:[]
+  }
+
   following_tree.insert_one(the_master)
   the_master = following_tree.find({ name: username })
 end
