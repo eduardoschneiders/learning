@@ -80,39 +80,63 @@ end
 
 
 
-resources = client_db[:resources].find
+resources = client_db[:resources]
 
 
+# inc = 0
+# loop do
+#   results = resources.skip(inc).limit(10)
+#   total = results.inject(0) { |acc, _| acc + 1 }
+#   inc += 10
+#   break if total <= 0
+# end
 
-total = resources.count
-i = 0
+# binding.pry
+# exit
 
-resources.each do |r|
-  i += 1
-  percentage(i, total)
-  unless r[:tweets]
-    begin
-      # tweets = client.user_timeline(r[:name])
-      tweets = client.get_all_tweets(r[:name])
+i = resources.find({ tweets: { "$exists" => true }}).count
+total = resources.find({ tweets: { "$exists" => false }}).count
 
-      #tweet.attrs can be used insted of this object
-      #But it weights much more
-      all_tweets = tweets.map { |t| build_tweet(t) }
+inc = 0
+loop do
+  results = resources.find.skip(inc).limit(10)
+  inc += 10
+  total_res = results.inject(0) { |acc, _| acc + 1 }
+  break if total_res <= 0
 
-      r[:tweets] = all_tweets
-      puts "Name1: #{r[:name]}"
+  results.each do |r|
+    i += 1
+    puts i
+    unless r[:tweets]
+      begin
+        # tweets = client.user_timeline(r[:name])
+        tweets = client.get_all_tweets(r[:name])
 
-      client_db[:resources].find(name: r[:name]).update_one({ "$set" => { tweets: all_tweets } })
-    rescue Twitter::Error::TooManyRequests => error
-      time = error.rate_limit.reset_in
-      breaking(time)
-      retry
-    rescue Twitter::Error::Unauthorized, Twitter::Error::NotFound
-      next
-    rescue Twitter::Error::RequestTimeout
-      puts '\n-------------- time out'
-      sleep 10
-      retry
+        #tweet.attrs can be used insted of this object
+        #But it weights much more
+        all_tweets = tweets.map { |t| build_tweet(t) }
+
+        r[:tweets] = all_tweets
+        puts "Name1: #{r[:name]}"
+
+        client_db[:resources].find(name: r[:name]).update_one({ "$set" => { tweets: all_tweets } })
+      rescue Twitter::Error::TooManyRequests => error
+        time = error.rate_limit.reset_in
+        breaking(time)
+        retry
+      rescue Twitter::Error::Unauthorized, Twitter::Error::NotFound
+        next
+      rescue Twitter::Error::RequestTimeout
+        puts '\n-------------- time out'
+        sleep 10
+        retry
+      rescue Twitter::Error::ServiceUnavailable
+        puts '\n-------------- unavailable'
+        sleep 10
+        retry
+
+      end
+      percentage(i, total)
     end
   end
 end
