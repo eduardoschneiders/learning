@@ -10,35 +10,38 @@ client = Twitter::REST::Client.new do |config|
 end
 
 username = 'eduschneiders'
-todo = 'count_tw'
+todo = 'fetch_tw'
 
 
 client_db = Mongo::Client.new(['localhost:27017'], database: 'data_mining_test')
 
 def update_db(the_master, following)
   the_master.update_one(
-    { "$set" => { following: following }}
+    { "$set" => { resources: following }}
   )
 end
 
-def collect_with_max_id(collection=[], max_id=nil, &block)
+def collect_with_max_id(collection=[], max_id=nil, max, &block)
   response = yield(max_id)
   collection += response
-  response.empty? ? collection.flatten : collect_with_max_id(collection, response.last.id - 1, &block)
+
+  if response.empty? || max <= 0
+    collection.flatten 
+  else
+    collect_with_max_id(collection, response.last.id - 1, max - 1,  &block)
+  end
 end
 
 def client.get_all_tweets(user)
   collect_with_max_id do |max_id|
     begin
-      options = { count: 200, include_rts: true }
+      options = { max: 3, count: 200, include_rts: true }
       options[:max_id] = max_id unless max_id.nil?
+
       user_timeline(user, options)
     rescue Twitter::Error::TooManyRequests => error
-      binding.pry
       time = error.rate_limit.reset_in
-      puts "Sleep for #{time} ---------------------"
-      sleep time
-      puts 'restarting ------------'
+      breaking(time)
       retry
     end
   end
@@ -58,14 +61,63 @@ def build_tweet(t)
 end
 
 def breaking(time)
+  puts "\n"
   while time > 0
     print "Sleeping for #{time} seconds ---------------------\r"
     sleep 1
     time -= 1
   end
-  puts 'restarting ------------'
+  puts '\nrestarting ------------'
 end
 
+def percentage(done, total)
+  percent = (done.to_f/total*100).round(0)
+  a = percent.to_i.times.map { '=' }.join
+  b = (100 - percent.to_i).times.map { ' ' }.join
+  print "Percentage: #{percent}% -> #{done} of #{total}"
+  print "     [#{a}#{b}] \r"
+end
+
+
+
+resources = client_db[:resources].find
+
+
+
+total = resources.count
+i = 0
+
+resources.each do |r|
+  i += 1
+  percentage(i, total)
+  unless r[:tweets]
+    begin
+      # tweets = client.user_timeline(r[:name])
+      tweets = client.get_all_tweets(r[:name])
+
+      #tweet.attrs can be used insted of this object
+      #But it weights much more
+      all_tweets = tweets.map { |t| build_tweet(t) }
+
+      r[:tweets] = all_tweets
+      puts "Name1: #{r[:name]}"
+
+      client_db[:resources].find(name: r[:name]).update_one({ "$set" => { tweets: all_tweets } })
+    rescue Twitter::Error::TooManyRequests => error
+      time = error.rate_limit.reset_in
+      breaking(time)
+      retry
+    rescue Twitter::Error::Unauthorized, Twitter::Error::NotFound
+      next
+    rescue Twitter::Error::RequestTimeout
+      puts '\n-------------- time out'
+      sleep 10
+      retry
+    end
+  end
+end
+
+exit
 
 following_tree = client_db[:following_tree]
 the_master = following_tree.find({ name: username })
@@ -86,6 +138,33 @@ following.each do |e|
       puts "Tweets:"
       tweets.each do |t|
         puts "      #{t.text}"
+      end
+    end
+
+    e[:following].each do |e2|
+      unless e2[:tweets]
+        begin
+          tweets = client.user_timeline(e2[:name])
+          
+          #tweet.attrs can be used insted of this object
+          #But it weights much more
+          all_tweets = tweets.map { |t| build_tweet(t) }
+
+          e2[:tweets] = all_tweets
+          puts "Name1: #{e[:name]} -> Name2: #{e2[:name]}"
+
+          update_db(the_master, following)
+        rescue Twitter::Error::TooManyRequests => error
+          time = error.rate_limit.reset_in
+          breaking(time)
+          retry
+        rescue Twitter::Error::Unauthorized
+          next
+        rescue Twitter::Error::RequestTimeout
+          puts '-------------- time out'
+          sleep 10
+          retry
+        end
       end
     end
   elsif todo == 'count_tw'
