@@ -3,10 +3,10 @@
 
 LANG=en_US
 TODAY=$(date +"%b %_d")
-FILE='/var/log/auth.log'
+FILE=/tmp/auth.log
+sudo cat /var/log/auth.log.1 /var/log/auth.log > $FILE
 USER=$(whoami)
-
-RESULT=$(sudo grep -E "$TODAY.*adclient.*INFO.*PAM authentication granted.*$USER" $FILE | grep -v 'COMMAND' | grep -v 'sudo')
+RESULT=$(grep -E "$TODAY.*adclient.*INFO.*PAM authentication granted.*$USER" $FILE| grep -v 'COMMAND' | grep -v 'sudo')
 
 while read line; do
   echo $line | awk '{print $3;}'
