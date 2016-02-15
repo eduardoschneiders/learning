@@ -2,7 +2,7 @@ DB_CLIENT_PUBLIC_KEY = 'public-api-key'
 DB_CLIENT_TOKEN = 'secret-token'
 
 class MyApp < Sinatra::Base
-  get '/foo' do
+  before do
     auth_header = env['HTTP_AUTHORIZATION'].split(':')
 
     halt 401 unless auth_header.size == 2
@@ -18,7 +18,10 @@ class MyApp < Sinatra::Base
     computed_signature = OpenSSL::HMAC.hexdigest(OpenSSL::Digest.new('md5'), DB_CLIENT_TOKEN, uri + body)
     halt 403 unless computed_signature == signature
 
-    "Access granted"
+  end
+
+  get '/foo' do
+    "Access granted to foo"
   end
 end
 
