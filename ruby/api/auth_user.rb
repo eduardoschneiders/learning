@@ -13,13 +13,19 @@ module AuthUser
     halt 403 unless user
 
     body = request.body.read
-    uri = env['REQUEST_URI']
-    method = env['REQUEST_METHOD']
+    http_uri = env['REQUEST_URI']
+    http_method = env['REQUEST_METHOD']
 
-    computed_signature = OpenSSL::HMAC.hexdigest(OpenSSL::Digest.new('md5'), user.token, uri + body)
+    computed_signature = OpenSSL::HMAC.hexdigest(OpenSSL::Digest.new('md5'), user.token, http_uri + body)
     halt 403 unless computed_signature == signature
 
-    rule = user.rules.first { |rule| rule.path == uri }
-    halt 403 unless rule.actions.include? method.downcase
+    can_access_uri(user, http_uri, http_method)
+  end
+
+  private
+
+  def can_access_uri(user, http_uri, http_method)
+    halt 403 unless rule = user.rules.find { |rule| rule.path == http_uri }
+    halt 403 unless rule.actions.include? http_method.downcase
   end
 end

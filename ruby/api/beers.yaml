@@ -1,0 +1,5 @@
+---
+- name: The Newest Beer
+  id: 1
+- name: The Beer
+  id: 2
