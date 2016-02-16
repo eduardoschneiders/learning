@@ -22,9 +22,18 @@ class MyApp < Sinatra::Base
     beer = Beer.create(params)
   end
 
-  put '/beer' do
-    require 'pry'; binding.pry
-    beer = Beer.create(params)
+  put '/beer/:id' do
+    beer = Beer.find(params[:id])
+    beer.name = 'New name to update'
+
+
+    if beer.save
+      response.status = 204
+    else
+      response.status = 500
+      response.headers['Content-Type'] = 'text/json'
+    end
+
   end
 end
 

@@ -2,6 +2,7 @@
 
 require 'sinatra'
 require 'hashie/mash'
+require 'pry'
 
 require './app.rb'
 

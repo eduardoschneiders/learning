@@ -1,5 +1,5 @@
 ---
-- name: The Newest Beer
-  id: 1
-- name: The Beer
+- name: The Bier
   id: 2
+- name: New name to update
+  id: 1

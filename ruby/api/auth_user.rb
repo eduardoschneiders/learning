@@ -25,7 +25,15 @@ module AuthUser
   private
 
   def can_access_uri(user, http_uri, http_method)
-    halt 403 unless rule = user.rules.find { |rule| rule.path == http_uri }
-    halt 403 unless rule.actions.include? http_method.downcase
+    if wild_card_rules = user.rules.select { |rule| (rule.path =~ /\/\*/) != nil }
+      rule = wild_card_rules.detect do |rule|
+        url_part = rule.path.split('/*')
+        http_uri.include? url_part[0]
+      end
+    else
+      rule = user.rules.find { |rule| rule.path == http_uri }
+    end
+
+    halt 403 unless rule or !rule.actions.include? http_method.downcase
   end
 end

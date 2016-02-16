@@ -1,8 +1,8 @@
 class User
   def self::first(queries)
-    all_users.select do |user|
+    all_users.detect do |user|
       queries.all? { |query| user.send(query.first) == query.last }
-    end.first
+    end
   end
 
   private
