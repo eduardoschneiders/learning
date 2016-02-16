@@ -1,6 +1,3 @@
-DB_CLIENT_PUBLIC_KEY = 'public-api-key'
-DB_CLIENT_TOKEN = 'secret-token'
-
 class MyApp < Sinatra::Base
   before do
     auth_header = env['HTTP_AUTHORIZATION'].split(':')
@@ -10,14 +7,15 @@ class MyApp < Sinatra::Base
     public_key = auth_header[0]
     signature = auth_header[1]
 
-    halt 403 unless DB_CLIENT_PUBLIC_KEY == public_key
+    user = User.first({ public_api_key: public_key })
+    require 'pry'; binding.pry
+    halt 403 unless user
 
     body = request.body.read
     uri = env['REQUEST_URI']
 
-    computed_signature = OpenSSL::HMAC.hexdigest(OpenSSL::Digest.new('md5'), DB_CLIENT_TOKEN, uri + body)
+    computed_signature = OpenSSL::HMAC.hexdigest(OpenSSL::Digest.new('md5'), user.token, uri + body)
     halt 403 unless computed_signature == signature
-
   end
 
   get '/foo' do

@@ -2,7 +2,7 @@
 URI='/foo'
 BODY=''
 CLIENT_ID='public-api-key'
-CLIENT_SECRET='secret-token'
+CLIENT_SECRET='client-secret'
 
 SIGNATURE=$(./hmac.py $CLIENT_SECRET "$URI$BODY")
 
