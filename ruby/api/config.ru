@@ -4,6 +4,5 @@ require 'sinatra'
 require 'hashie/mash'
 
 require './app.rb'
-require './user.rb'
 
 run MyApp
