@@ -19,7 +19,6 @@ class Beer
       beers << beer 
       file = File.write('./beers.yaml', YAML.dump(beers))
       true
-      raise 'asdf'
     rescue
       false
     end
