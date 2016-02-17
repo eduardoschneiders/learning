@@ -1,12 +1,12 @@
 #!/bin/bash
-URI='/beer/1'
-BODY='name=The%20Beer'
+URI='/beers'
+BODY='{"name": "Creating new beer"}'
 CLIENT_ID='public-api-key'
 CLIENT_SECRET='client-secret'
 
 SIGNATURE=$(./hmac.py $CLIENT_SECRET "$URI$BODY")
 
-curl -i -X PUT -d $BODY -H "Authorization: $CLIENT_ID:$SIGNATURE" "http://localhost:4567$URI"
+curl -i -X POST -d "$BODY" -H "Authorization: $CLIENT_ID:$SIGNATURE" "http://localhost:4567$URI"
 
 URI='/beers'
 BODY=''

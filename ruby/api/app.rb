@@ -18,13 +18,16 @@ class MyApp < Sinatra::Base
     { resuts: beers }.to_json
   end
 
-  post '/beer' do
-    beer = Beer.create(params)
+  post '/beers' do
+    request.body.rewind
+    attributes = JSON.parse request.body.read
+    beer = Beer.create(attributes)
   end
 
   put '/beer/:id' do
     beer = Beer.find(params[:id])
-    attributes = env['rack.request.form_hash']
+    request.body.rewind
+    attributes = JSON.parse request.body.read
     beer.update_attributes(attributes)
 
     if beer.save

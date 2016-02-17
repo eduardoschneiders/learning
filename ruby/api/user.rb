@@ -15,8 +15,8 @@ class User
         token: 'client-secret',
         rules: [
           Hashie::Mash.new({ path: '/foo', actions: ['post', 'get', 'put'] }),
-          Hashie::Mash.new({ path: '/beer/*', actions: ['get', 'post'] }),
-          Hashie::Mash.new({ path: '/beers', actions: ['get'] })
+          Hashie::Mash.new({ path: '/beer/*', actions: ['get'] }),
+          Hashie::Mash.new({ path: '/beers', actions: ['get', 'post'] })
         ]
       }),
       Hashie::Mash.new({ name: 'Test', public_api_key: 'test-public-api', token: 'test-token' }),
