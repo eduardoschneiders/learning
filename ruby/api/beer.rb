@@ -16,12 +16,17 @@ class Beer
     begin
       beers = YAML.load(File.read('./beers.yaml')) || []
       beers.delete_if { |beer| beer['id'] ==  self.id}
-      beers << beer 
+      beers << beer
       file = File.write('./beers.yaml', YAML.dump(beers))
       true
     rescue
       false
     end
+  end
+
+  def update_attributes(attrs)
+    attrs.each { |attr| self.instance_variable_set("@#{attr[0]}", attr[1]) }
+    save
   end
 
   def self::find(id)

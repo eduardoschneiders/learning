@@ -8,7 +8,7 @@ SIGNATURE=$(./hmac.py $CLIENT_SECRET "$URI$BODY")
 
 curl -i -X PUT -d $BODY -H "Authorization: $CLIENT_ID:$SIGNATURE" "http://localhost:4567$URI"
 
-# URI='/beers'
-# BODY=''
-# SIGNATURE=$(./hmac.py $CLIENT_SECRET "$URI$BODY")
-# curl -i -H "Authorization: $CLIENT_ID:$SIGNATURE" "http://localhost:4567$URI"
+URI='/beers'
+BODY=''
+SIGNATURE=$(./hmac.py $CLIENT_SECRET "$URI$BODY")
+curl -i -H "Authorization: $CLIENT_ID:$SIGNATURE" "http://localhost:4567$URI"

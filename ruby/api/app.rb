@@ -24,8 +24,8 @@ class MyApp < Sinatra::Base
 
   put '/beer/:id' do
     beer = Beer.find(params[:id])
-    beer.name = 'New name to update'
-
+    attributes = env['rack.request.form_hash']
+    beer.update_attributes(attributes)
 
     if beer.save
       response.status = 204
