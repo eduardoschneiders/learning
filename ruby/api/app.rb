@@ -13,8 +13,21 @@ class MyApp < Sinatra::Base
     "Access granted to foo"
   end
 
+  get '/beer/:id' do
+    beer = Beer.find(params[:id])
+
+    response.status = 200
+    response.headers['Content-Type'] = 'text/json'
+
+    { resuts: beer }.to_json
+  end
+
   get '/beers' do
     beers = Beer.all
+
+    response.status = 200
+    response.headers['Content-Type'] = 'text/json'
+
     { resuts: beers }.to_json
   end
 
@@ -22,6 +35,10 @@ class MyApp < Sinatra::Base
     request.body.rewind
     attributes = JSON.parse request.body.read
     beer = Beer.create(attributes)
+    response.status = 201
+    response.headers['Content-Type'] = 'text/json'
+
+    { resuts: beer }.to_json
   end
 
   put '/beer/:id' do
@@ -36,7 +53,6 @@ class MyApp < Sinatra::Base
       response.status = 500
       response.headers['Content-Type'] = 'text/json'
     end
-
   end
 end
 
