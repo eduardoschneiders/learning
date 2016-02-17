@@ -1,14 +1,73 @@
-#!/bin/bash
-URI='/beers'
-BODY='{"name": "Creating new beer"}'
+# #!/bin/bash
 CLIENT_ID='public-api-key'
 CLIENT_SECRET='client-secret'
 
+#CREATE-----------------------------------------------------
+URI='/beers'
+BODY='{"name": "Creating new beer"}'
 SIGNATURE=$(./hmac.py $CLIENT_SECRET "$URI$BODY")
 
 curl -i -X POST -d "$BODY" -H "Authorization: $CLIENT_ID:$SIGNATURE" "http://localhost:4567$URI"
 
+#UPDATE-----------------------------------------------------
+URI='/beer/1'
+BODY='{"name": "Beer updated"}'
+SIGNATURE=$(./hmac.py $CLIENT_SECRET "$URI$BODY")
+
+curl -i -X PUT -d "$BODY" -H "Authorization: $CLIENT_ID:$SIGNATURE" "http://localhost:4567$URI"
+
+# #GET ONE-----------------------------------------------------
+URI='/beer/1'
+BODY=''
+SIGNATURE=$(./hmac.py $CLIENT_SECRET "$URI$BODY")
+
+curl -i -H "Authorization: $CLIENT_ID:$SIGNATURE" "http://localhost:4567$URI"
+
+#CREATE-----------------------------------------------------
+URI='/beers'
+BODY='{"name": "Beer 1"}'
+SIGNATURE=$(./hmac.py $CLIENT_SECRET "$URI$BODY")
+
+curl -i -X POST -d "$BODY" -H "Authorization: $CLIENT_ID:$SIGNATURE" "http://localhost:4567$URI"
+
+#CREATE-----------------------------------------------------
+URI='/beers'
+BODY='{"name": "Beer 2"}'
+SIGNATURE=$(./hmac.py $CLIENT_SECRET "$URI$BODY")
+
+curl -i -X POST -d "$BODY" -H "Authorization: $CLIENT_ID:$SIGNATURE" "http://localhost:4567$URI"
+
+#CREATE-----------------------------------------------------
+URI='/beers'
+BODY='{"name": "Beer 3"}'
+SIGNATURE=$(./hmac.py $CLIENT_SECRET "$URI$BODY")
+
+curl -i -X POST -d "$BODY" -H "Authorization: $CLIENT_ID:$SIGNATURE" "http://localhost:4567$URI"
+
+#CREATE-----------------------------------------------------
+URI='/beers'
+BODY='{"name": "Beer 4"}'
+SIGNATURE=$(./hmac.py $CLIENT_SECRET "$URI$BODY")
+
+curl -i -X POST -d "$BODY" -H "Authorization: $CLIENT_ID:$SIGNATURE" "http://localhost:4567$URI"
+
+#CREATE-----------------------------------------------------
+URI='/beers'
+BODY='{"name": "Beer 5"}'
+SIGNATURE=$(./hmac.py $CLIENT_SECRET "$URI$BODY")
+
+curl -i -X POST -d "$BODY" -H "Authorization: $CLIENT_ID:$SIGNATURE" "http://localhost:4567$URI"
+
+#CREATE-----------------------------------------------------
+URI='/beers'
+BODY='{"name": "Beer 6"}'
+SIGNATURE=$(./hmac.py $CLIENT_SECRET "$URI$BODY")
+
+curl -i -X POST -d "$BODY" -H "Authorization: $CLIENT_ID:$SIGNATURE" "http://localhost:4567$URI"
+
+# #GET ALL-----------------------------------------------------
 URI='/beers'
 BODY=''
 SIGNATURE=$(./hmac.py $CLIENT_SECRET "$URI$BODY")
+
 curl -i -H "Authorization: $CLIENT_ID:$SIGNATURE" "http://localhost:4567$URI"

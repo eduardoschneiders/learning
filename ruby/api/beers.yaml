@@ -1,5 +1,17 @@
 ---
-- name: The Bier
+- name: Creating new beer
   id: 2
-- name: New name to update
+- name: Beer updated
   id: 1
+- name: Beer 1
+  id: 2
+- name: Beer 2
+  id: 3
+- name: Beer 3
+  id: 4
+- name: Beer 4
+  id: 5
+- name: Beer 5
+  id: 6
+- name: Beer 6
+  id: 7

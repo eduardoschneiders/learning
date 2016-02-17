@@ -7,8 +7,8 @@ class Beer
     attrs.each { |attr| self.instance_variable_set("@#{attr[0]}", attr[1]) }
   end
 
-  def to_json
-    properties
+  def to_json(attrs)
+    properties.to_json
   end
 
   def save
@@ -46,8 +46,10 @@ class Beer
 
   def self::create(params)
     beers = load_beers
-    beers << params.merge('id' => next_id(beers))
+    beer = params.merge('id' => next_id(beers))
+    beers << beer
     save_beers!(beers)
+    beer
   end
 
   private
