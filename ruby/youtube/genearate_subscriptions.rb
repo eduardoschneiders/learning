@@ -6,14 +6,14 @@ require 'openssl'
 require 'pry'
 
 def get_subscriptions(next_page_token = nil)
-  url = "https://www.googleapis.com/youtube/v3/subscriptions?part=id&mine=true&pageToken=#{next_page_token}"
+  url = "https://www.googleapis.com/youtube/v3/subscriptions?part=id,snippet&mine=true&pageToken=#{next_page_token}"
   headers = {
     'authorization' => "Bearer #{get_token}",
     'cache-control' => 'no-cache'
   }
 
   puts response = JSON.parse(get_request(url, headers))
-  store_subscriptions(response['items'].map { |item| item['id'] })
+  store_subscriptions(response['items'].map { |item| item['snippet']['resourceId']['channelId'] })
   next_page_token = response['nextPageToken']
   get_subscriptions(next_page_token) if next_page_token
 end
