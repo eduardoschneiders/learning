@@ -1,0 +1,16 @@
+(defun factorial (x)
+  (setq a 1)
+  (loop for i from 1 to x do
+      (setq a (* a i)))
+  (print a))
+
+(factorial 5)
+
+
+(defun recursive(x)
+  (if (= x 0)
+    1
+    (* x (recursive (- x 1))))
+  )
+
+(print (recursive 5))
