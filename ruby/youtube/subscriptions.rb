@@ -15,7 +15,14 @@ class Subscriptions
       }
 
       puts response = JSON.parse(Request.get(url, headers))
-      store_subscriptions(response['items'].map { |item| item['snippet']['resourceId']['channelId'] })
+      subscriptions = response['items'].map do |item| 
+        {
+          title: item['snippet']['title'],
+          id: item['snippet']['resourceId']['channelId'],
+          url: item['snippet']['thumbnails']['default']['url']
+        }
+      end
+                                              store_subscriptions(subscriptions )
       next_page_token = response['nextPageToken']
       get_subscriptions(next_page_token) if next_page_token
     end
@@ -25,13 +32,14 @@ class Subscriptions
     end
 
     def load_subscriptions
-      JSON.parse(File.read('subscriptions.metadata'))
+      content = File.read('subscriptions.metadata')
+      JSON.parse(content) unless content.empty?
     end
 
     def store_subscriptions(data)
       subscriptions = load_subscriptions
 
-      unless subscriptions.empty?
+      if subscriptions
         actual_data = subscriptions['subscriptions']
       else
         actual_data = []

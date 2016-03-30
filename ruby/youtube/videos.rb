@@ -13,7 +13,7 @@ class Videos
         'cache-control' => 'no-cache'
       }
 
-      url = "https://www.googleapis.com/youtube/v3/search?part=id%2Csnippet&channelId=#{channel_id}&type=video&maxResults=4"
+      url = "https://www.googleapis.com/youtube/v3/search?part=id%2Csnippet&channelId=#{channel_id}&type=video&maxResults=50"
       JSON.parse(Request.get(url, headers))
       # store_videos(response['items'].map { |item| item['id']['videoId'] })
     end

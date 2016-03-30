@@ -9,11 +9,13 @@ require './videos'
 class MyApp < Sinatra::Base
   CLIENT_ID = ''
   CLIENT_SECRET = ''
+
   get '/' do
  <<-eos
   <a href="auth">Get authentication</a>
   <a href="generate_subscriptions">Generate subscriptions</a>
-  <a href="select_videos">Select subscriptions</a>
+  <a href="select_subscription">Select subscription</a>
+  <a href="download">donwload</a>
 eos
   end
 
@@ -70,11 +72,53 @@ eos
     File.open('videos_to_download', 'a') { |file| file.write("\n" + params['videos'].join("\n")) }
   end
 
-  get '/select_videos' do
+  get '/select_subscription' do
     subscriptions = Subscriptions.load_subscriptions['subscriptions']
-    result = '<form action="generate_videos" method="post">'
-    subscriptions.each do |channel_id|
-      videos = Videos.get_videos(channel_id)['items']
+    html = subscriptions.map do |subscription|
+      # videos = Videos.get_videos(subscription['id'])['items']
+      # videos = [
+      #   {
+      #     'id' => {
+      #       'videoId'=> 'asdferweesg'
+      #     },
+      #     'snippet' => {
+      #       'title' => 'the second title',
+      #       'thumbnails' => {
+      #         'default' => {
+      #           'url' => 'https://i.ytimg.com/vi/CHN0hscu9aQ/default.jpg'
+      #         }
+      #       }
+      #     }
+      #   },
+      #   {
+      #     'id' => {
+      #       'videoId'=> 'asdf'
+      #     },
+      #     'snippet' => {
+      #       'title' => 'the title',
+      #       'thumbnails' => {
+      #         'default' => {
+      #           'url' => 'https://i.ytimg.com/vi/-onQcF95pfs/default.jpg'
+      #         }
+      #       }
+      #     }
+      #   }
+      # ]
+
+      # videos_metadata = videos.map do |video|
+      #   video_metadata(video)
+      # end
+      # puts "#{channel_id}"
+
+      # result += "channel: #{channel_id}<br />#{videos_html(videos_metadata)}<br />"
+      "<li style='width: 90px; float: left; height: 170px; overflow: hidden'><a href='select_video/#{subscription['id']}'><img src='#{subscription['url']}'> #{subscription['title']}</a></li>"
+    end.join
+    "<ul>#{html}</ul>"
+  end
+
+  get '/select_video/:id' do
+    result = '<form action="/generate_videos" method="post">'
+      videos = Videos.get_videos(params[:id])['items']
       # videos = [
       #   {
       #     'id' => {
@@ -107,13 +151,15 @@ eos
       videos_metadata = videos.map do |video|
         video_metadata(video)
       end
-      puts "#{channel_id}"
 
-      result += "channel: #{channel_id}<br />#{videos_html(videos_metadata)}<br />"
-    end
+      result += "#{videos_html(videos_metadata)}"
 
     result += "<input type='submit' value='send'></form>"
     result
+  end
+
+  get '/download' do
+    %x(youtube-dl -i -a videos_to_download --download-archive downloaded_batch -o 'videos_downloaded/%(uploader)s/%(title)s.%(ext)s')
   end
 
   private
@@ -127,13 +173,13 @@ eos
   end
 
   def videos_html(videos_metadata)
-    html = ''
+    html = '<ul>'
 
     videos_metadata.each do |video|
-      html += "<label><input name='videos[]' type='checkbox' value='#{video[:video_id]}'> <img src='#{video[:url]}'>#{video[:title]}</label>"
+      html += "<li style='width: 150px; float: left; height: 170px;'><label><input name='videos[]' type='checkbox' value='#{video[:video_id]}'> <img src='#{video[:url]}'>#{video[:title]}</label></li>"
     end
 
-    html
+    html += '</ul>'
   end
 end
 
