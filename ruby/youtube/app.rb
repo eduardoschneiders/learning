@@ -116,7 +116,9 @@ eos
 
   get '/select_video/:id' do
     result = '<form action="/generate_videos" method="post">'
-      videos = Videos.get_videos(params[:id])['items']
+    videos_response = Videos.get_videos(params[:id], params[:page_token])
+    next_page_token = videos_response['nextPageToken']
+      videos = videos_response['items']
       # videos = [
       #   {
       #     'id' => {
@@ -152,6 +154,7 @@ eos
 
       result += "#{videos_html(videos_metadata)}"
 
+    result += "<div style='clear:both'></div><a href='/select_video/#{params[:id]}?page_token=#{next_page_token}'>NEXT PAGE</a><br />" if next_page_token
     result += "<input type='submit' value='send'></form>"
     result
   end

@@ -7,15 +7,20 @@ require 'pry'
 
 class Videos
   class << self
-    def get_videos(channel_id)
+    def get_videos(channel_id, page_token)
       headers = {
         'authorization' => "Bearer #{get_token}",
         'cache-control' => 'no-cache'
       }
 
-      url = "https://www.googleapis.com/youtube/v3/search?part=id%2Csnippet&channelId=#{channel_id}&type=video&maxResults=50"
+      if page_token
+        page_token_str = "&pageToken=#{page_token}"
+      else
+        page_token_str = ''
+      end
+
+      url = "https://www.googleapis.com/youtube/v3/search?part=id%2Csnippet&channelId=#{channel_id}&type=video&maxResults=50#{page_token_str}"
       JSON.parse(Request.get(url, headers))
-      # store_videos(response['items'].map { |item| item['id']['videoId'] })
     end
 
     def get_token
