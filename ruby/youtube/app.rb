@@ -2,14 +2,12 @@ require 'json'
 require 'cgi'
 require 'net/http'
 require 'uri'
+require './keys'
 require './requests'
 require './subscriptions'
 require './videos'
 
 class MyApp < Sinatra::Base
-  CLIENT_ID = ''
-  CLIENT_SECRET = ''
-
   get '/' do
  <<-eos
   <a href="auth">Get authentication</a>
