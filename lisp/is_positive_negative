@@ -1,0 +1,10 @@
+(defun IspositiveNegative()
+  (princ "Enter number: ")
+  (setq number (read))
+  (if (> number 0)
+    (princ "Positive")
+    (princ "Negative")
+  )
+)
+
+(IspositiveNegative)

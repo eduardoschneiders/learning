@@ -1,0 +1,9 @@
+(defun CircleArea()
+  (terpri)
+  (princ "Enter: ")
+  (setq radius (read))
+  (setq area (* radius radius 3.1416))
+  (princ area)
+)
+
+(CircleArea)
