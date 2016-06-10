@@ -15,13 +15,11 @@ string = File.read('text_to_translate.txt')
 
 string = CaesarEncrypt.encrypt(string, 5) + "\0"
 
-char_position = 0
-init_range = 0
-end_range = 2
+char_position = init_range = 0
 
 while ((char = string[char_position]) && (selected_pixels = pixels[init_range..init_range + 2])) do
+  origin_pixels = selected_pixels
   binary_char = char.unpack("B*").first
-  i = 0
 
   selected_pixels = selected_pixels.map do |pixel|
     [
@@ -31,6 +29,7 @@ while ((char = string[char_position]) && (selected_pixels = pixels[init_range..i
     ]
   end
 
+  i = 0
   binary_char.each_char do |bit|
     selected_pixels.flatten[i][7] = bit
     i += 1
@@ -42,11 +41,15 @@ while ((char = string[char_position]) && (selected_pixels = pixels[init_range..i
     end
   end
 
-  selected_pixels = selected_pixels.map { |rgb| Magick::Pixel.new(rgb[0], rgb[1], rgb[2]) }
+  selected_pixels = selected_pixels.each_with_index do |rgb, i|
+    origin_pixels[i].red = rgb[0]
+    origin_pixels[i].green = rgb[1]
+    origin_pixels[i].blue = rgb[2]
+  end
 
-  pixels[init_range] = selected_pixels[0]
-  pixels[init_range + 1] = selected_pixels[1]
-  pixels[init_range + 2] = selected_pixels[2]
+  pixels[init_range] = origin_pixels[0]
+  pixels[init_range + 1] = origin_pixels[1]
+  pixels[init_range + 2] = origin_pixels[2]
 
   init_range += 3
   char_position += 1
