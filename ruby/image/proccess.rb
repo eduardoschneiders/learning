@@ -19,7 +19,7 @@ char_position = 0
 init_range = 0
 end_range = 2
 
-while ((char = string[char_position]) && (selected_pixels = pixels[init_range..end_range])) do
+while ((char = string[char_position]) && (selected_pixels = pixels[init_range..init_range + 2])) do
   binary_char = char.unpack("B*").first
   i = 0
 
@@ -49,7 +49,6 @@ while ((char = string[char_position]) && (selected_pixels = pixels[init_range..e
   pixels[init_range + 2] = selected_pixels[2]
 
   init_range += 3
-  end_range += 3
   char_position += 1
 end
 
