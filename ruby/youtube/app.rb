@@ -68,6 +68,7 @@ eos
 
   post '/generate_videos' do
     File.open('videos_to_download', 'a') { |file| file.write("\n" + params['videos'].join("\n")) }
+    redirect to('/')
   end
 
   get '/select_subscription' do

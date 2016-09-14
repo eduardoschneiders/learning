@@ -14,7 +14,7 @@ done <<< "$RESULT"
 
 IFS=$'\n' read -rd '' -a lines <<< "$RESULT"
 hour=$(echo ${lines[0]} | awk '{print $3;}')
-add=$(echo 8 0.5 | awk '{print ($1 + 2.5 + $2)*60 }')
+add=$(echo 8 0.5 | awk '{print ($1 + 1.0 + $2)*60 }')
 finishtime=$(date -d "$hour $add minutes" +'%H:%M')
 
 printf "\nFinish time: $finishtime!\n"
