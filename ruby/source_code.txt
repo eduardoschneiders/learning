@@ -1,0 +1,26 @@
+function multiply(x, y) {
+  return x * y;
+}
+
+result = multiply(1, 2);
+
+xtpo = a >= b;
+xtpo = c > e;
+xtpo = f < g;
+xtpo = h <= i;
+xpto = x++;
+
+if (xpto >= 0) {
+  x++;
+} else if( x == y){
+  x--;
+}
+
+for (x = 0; x <= result; x++){
+  x++;
+}
+
+while (x <= 10){
+  x++;
+}
+

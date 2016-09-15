@@ -10,17 +10,15 @@ function_call               = /(#{var_name})\s?#{function_params_call}/         
 
 binary_operator       = /==|>=|<=|>|<|\/|\*|\+|-/                                     #<
 unary_operator        = /\+\+|--/                                                     #++|--
-binary_expression     = /#{value}\s?#{binary_operator}\s?#{value}/                    #f < g | f * 1
-unary_expression      = /#{var_name}#{unary_operator}/                                   #f++ | f--
-expression            = /(?:#{binary_expression})|(?:#{unary_expression})|(?:#{function_call})|(?:#{value})/  #f < g | multiply(1, 2) | f++ | 1
+binary_expression     = /(#{value}\s?#{binary_operator}\s?#{value})/                    #f < g | f * 1
+unary_expression      = /(#{var_name}#{unary_operator})/                                   #f++ | f--
+expression            = /#{binary_expression}|#{unary_expression}|#{function_call}|#{value}/  #f < g | multiply(1, 2) | f++ | 1
 attribution           = /#{var_declaration}\s?=\s?(#{expression});?/                #xtpo = h <= i
 
 function_return       = /return\s(#{expression});?/                               #return x * y;
 conditional           = /if\s\((#{attribution}|#{expression})\)\s?{?/
 for_loop              = /for\s?\(#{attribution};\s?#{expression};\s?#{unary_expression}\)\s?{?/
 while_loop            = /while\s?\(#{expression}\)\s?{?/
-
-
 
 source_code = '
   function multiply(x, y) {
@@ -37,6 +35,8 @@ source_code = '
 
   if (xpto >= 0) {
     x++;
+  } else if(){
+    x--;
   }
 
   for (x = 0; x <= result; x++){
@@ -46,8 +46,12 @@ source_code = '
   while (x <= 10){
     x++;
   }
-
 '
+
+file_content = File.read('source_code.txt')
+unless file_content.empty?
+  source_code = file_content
+end
 
 results = []
 line_number = 0
@@ -74,11 +78,13 @@ source_code.each_line do |line|
   end
 
   if match = line.match(unary_expression)
-    results << { text: "Unary expression", line: line_number }
+    expression = match.captures.first
+    results << { text: "Unary expression: #{expression}", line: line_number }
   end
 
   if match = line.match(binary_expression)
-    results << { text: "Binary expression", line: line_number }
+    expression = match.captures.first
+    results << { text: "Binary expression: #{expression}", line: line_number }
   end
 
   if match = line.match(for_loop)
