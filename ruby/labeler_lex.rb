@@ -54,50 +54,50 @@ unless file_content.empty?
 end
 
 results = []
-line_number = 0
+line_number = 1
 source_code.each_line do |line|
 
   if match = line.match(function_declaration)
     function_name = match.captures.first
-    results << { text: "Function declaration: #{function_name}", line: line_number }
+    results << { text: "Function declaration: #{function_name}", line_number: line_number, line_text: line }
   end
 
   if match = line.match(function_return)
     return_expression = match.captures.first
-    results << { text: "Function return: #{return_expression}", line: line_number }
+    results << { text: "Function return: #{return_expression}", line_number: line_number, line_text: line }
   end
 
   if match = line.match(attribution)
     var, expression = match.captures[0..1]
-    results << { text: "Attribution of expression: #{expression} to var: #{var}", line: line_number }
+    results << { text: "Attribution of expression: #{expression} to var: #{var}", line_number: line_number, line_text: line }
   end
 
   if match = line.match(conditional)
     condition = match.captures.first
-    results << { text: "Conditional: #{condition}", line: line_number }
+    results << { text: "Conditional: #{condition}", line_number: line_number, line_text: line }
   end
 
   if match = line.match(unary_expression)
     expression = match.captures.first
-    results << { text: "Unary expression: #{expression}", line: line_number }
+    results << { text: "Unary expression: #{expression}", line_number: line_number, line_text: line }
   end
 
   if match = line.match(binary_expression)
     expression = match.captures.first
-    results << { text: "Binary expression: #{expression}", line: line_number }
+    results << { text: "Binary expression: #{expression}", line_number: line_number, line_text: line }
   end
 
   if match = line.match(for_loop)
-    results << { text: "For loop", line: line_number }
+    results << { text: "For loop", line_number: line_number, line_text: line }
   end
 
   if match = line.match(while_loop)
-    results << { text: "while loop", line: line_number }
+    results << { text: "while loop", line_number: line_number, line_text: line }
   end
 
    line_number += 1
 end
 
 results.each do | result |
-  p "#{result[:line]}  #{result[:text]}"
+  p "%2s %-60s %-35s" % [result[:line_number], result[:text], result[:line_text].gsub("\n", '')]
 end
