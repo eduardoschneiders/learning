@@ -1,24 +1,24 @@
-var_name        = /[a-zA-Z][a-zA-Z0-9_]*/                             #xpto_123
-var_declaration = /(?:var\s)?(#{var_name})/                           #var xpto
-value           = /[\d]+|#{var_name}/                                 #12
+var_name        = /[a-zA-Z][a-zA-Z0-9_]*/                             # xpto_123
+var_declaration = /(?:var\s)?(#{var_name})/                           # var xpto
+value           = /[\d]+|#{var_name}/                                 # 12
 
-function_params_declaration = /\((?:#{var_name},\s?)*#{var_name}\)/         #(x) | (x, y) | (x, y, z)
-function_params_call        = /\((?:#{value},\s?)*#{value}\)/               #(1) | (1, 2) | (1, 2, 3)
+function_params_declaration = /\((?:#{var_name},\s?)*#{var_name}\)/         # (x) | (x, y) | (x, y, z)
+function_params_call        = /\((?:#{value},\s?)*#{value}\)/               # (1) | (1, 2) | (1, 2, 3)
 
-function_declaration        = /function\s(#{var_name})\s?#{function_params_declaration}\s?{?/   #function multiply(x, y) {
-function_call               = /(#{var_name})\s?#{function_params_call}/                         #multiply(1, 2)
+function_declaration        = /function\s(#{var_name})\s?#{function_params_declaration}\s?{?/   # function multiply(x, y) {
+function_call               = /(#{var_name})\s?#{function_params_call}/                         # multiply(1, 2)
 
-binary_operator       = /==|>=|<=|>|<|\/|\*|\+|-/                                     #<
-unary_operator        = /\+\+|--/                                                     #++|--
-binary_expression     = /(#{value}\s?#{binary_operator}\s?#{value})/                    #f < g | f * 1
-unary_expression      = /(#{var_name}#{unary_operator})/                                   #f++ | f--
-expression            = /#{binary_expression}|#{unary_expression}|#{function_call}|#{value}/  #f < g | multiply(1, 2) | f++ | 1
-attribution           = /#{var_declaration}\s?=\s?(#{expression});?/                #xtpo = h <= i
+binary_operator       = /==|>=|<=|>|<|\/|\*|\+|-/                                             # <
+unary_operator        = /\+\+|--/                                                             # ++|--
+binary_expression     = /(#{value}\s?#{binary_operator}\s?#{value})/                          # f < g | f * 1
+unary_expression      = /(#{var_name}#{unary_operator})/                                      # f++ | f--
+expression            = /#{binary_expression}|#{unary_expression}|#{function_call}|#{value}/  # f < g | multiply(1, 2) | f++ | 1
+attribution           = /#{var_declaration}\s?=\s?(#{expression});?/                          # xtpo = h <= i
 
-function_return       = /return\s(#{expression});?/                               #return x * y;
-conditional           = /if\s\((#{attribution}|#{expression})\)\s?{?/
-for_loop              = /for\s?\(#{attribution};\s?#{expression};\s?#{unary_expression}\)\s?{?/
-while_loop            = /while\s?\(#{expression}\)\s?{?/
+function_return       = /return\s(#{expression});?/                                             # return x * y;
+conditional           = /if\s\((#{attribution}|#{expression})\)\s?{?/                           # if (x < 0) {
+for_loop              = /for\s?\(#{attribution};\s?#{expression};\s?#{unary_expression}\)\s?{?/ # for (x = 0, x <= 10, x++)
+while_loop            = /while\s?\(#{expression}\)\s?{?/                                        # while (x <= 10)
 
 source_code = '
   function multiply(x, y) {
