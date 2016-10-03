@@ -1,4 +1,5 @@
 #!/usr/bin/env ruby
+#source https://www.youtube.com/watch?v=1C3olrs1CUw
 
 require './linear_model'
 
@@ -33,7 +34,7 @@ end
 
 lm = LinearModel.new(observations)
 
-init_x = min_x(observations) * -1.1
+init_x = min_x(observations) * 0.9
 init_y = lm.y_prediction(init_x)
 
 final_x = max_x(observations) * 1.1
