@@ -43,7 +43,7 @@ source_code = '
     x++;
   }
 
-  while (x <= 10){
+  while (xpto = x <= 10){
     x++;
   }
 '
@@ -99,5 +99,5 @@ source_code.each_line do |line|
 end
 
 results.each do | result |
-  p "%2s %-60s %-35s" % [result[:line_number], result[:text], result[:line_text].gsub("\n", '')]
+  p "%-60s %2s %-35s" % [result[:text], result[:line_number], result[:line_text].gsub("\n", '')]
 end
