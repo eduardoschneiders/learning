@@ -11,12 +11,15 @@ class LinearModel
 
   private
 
-  def y_intercept
-    (sum_y - (slope * sum_x)) / n
+  def slope
+    top_formula = sum_xy - (sum_x * sum_y / n.to_f)
+    bottom_formula = sum_squared_x - (square_of_sum_x / n.to_f)
+
+    top_formula / bottom_formula
   end
 
-  def slope
-    top_formula / bottom_formula
+  def y_intercept
+    (sum_y - (slope * sum_x)) / n
   end
 
   def sum_xy #Exy
@@ -41,13 +44,5 @@ class LinearModel
 
   def square_of_sum_x #(Ex) ** 2
     sum_x ** 2
-  end
-
-  def top_formula
-    sum_xy - (sum_x * sum_y / n.to_f)
-  end
-
-  def bottom_formula
-    sum_squared_x - (square_of_sum_x / n.to_f)
   end
 end
