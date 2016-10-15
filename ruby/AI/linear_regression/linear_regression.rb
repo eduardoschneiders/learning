@@ -4,14 +4,10 @@
 require './linear_model'
 
 observations = [
-  [65, 105],
-  [65, 125],
-  [62, 110],
-  [67, 120],
-  [69, 140],
-  [65, 135],
-  [61, 95],
-  [67, 130]
+  [2, 3],
+  [4, 6],
+  [6, 4],
+  [8, 1],
 ]
 
 
@@ -32,12 +28,15 @@ def max_x(observations)
   observations.map(&:first).inject { |memo, value| memo > value ? memo : value }
 end
 
+
 lm = LinearModel.new(observations)
 
-init_x = min_x(observations) * 0.9
-init_y = lm.y_prediction(init_x)
+init_x = min_x(observations)
+init_y = lm.second_degree_y_prediction(init_x)
 
-final_x = max_x(observations) * 1.1
-final_y = lm.y_prediction(final_x)
+final_x = max_x(observations)
+final_y = lm.second_degree_y_prediction(final_x)
 
+# regression_coordinates = 10.times.map { : }
+require 'pry'; binding.pry
 write(observations, [[init_x, init_y], [final_x, final_y]])
