@@ -16,25 +16,44 @@
 
     var centerX = width / 2,
       centerY = height / 2,
-      radius = 50,
-      offset = 50,
-      yOffset = height * .5 - radius,
-      xOffset = width * .5 - radius,
-      angle = 0,
-      speed = 0.01;
+      radius = 2,
+      yOffset = height * .3 - radius,
+      xOffset = width * .3 - radius,
+      xAngle = 0,
+      yAngle = 0,
+      xSpeed = 0.03,
+      ySpeed = 0.03;
 
+
+    var fly = function (e){
+      var x = centerX + Math.cos(e['xAngle']) * xOffset * e['offset'];
+      var y = centerY + Math.sin(e['yAngle']) * yOffset * e['offset'];
+
+      e['xAngle'] += xSpeed * e['xSpeed'] * .8;
+      e['yAngle'] += ySpeed * e['ySpeed'] * .8;
+
+      context.beginPath();
+      context.arc(x, y, radius, 0, Math.PI * 2);
+      context.fill();
+    }
+
+    flies = [];
+
+    for(var i = 0; i <= 200; i += 1){
+      flies.push({
+        xAngle: Math.random() * i,
+        yAngle: Math.random() * i,
+        xSpeed: (Math.random() * .5) + .5,
+        ySpeed: (Math.random() * .5) + .5,
+        offset: (Math.random() * .5) + .5,
+      })
+    }
 
     function render(){
-      var radius_variation = Math.sin(angle) * offset;
-      var delta_variation =  0.5 + Math.cos(angle) * 0.5;
-
-      context.fillStyle = "rgba(0,0,0, " + delta_variation + ")";
       context.clearRect(0, 0, width, height);
-      context.beginPath();
-      context.arc(centerX, centerY, radius + radius_variation, 0, Math.PI * 2);
-      context.fill();
-      context.stroke();
-      angle += speed;
+      for(var i = 0; i < flies.length; i += 1){
+        fly(flies[i])
+      }
       requestAnimationFrame(render);
     }
 
