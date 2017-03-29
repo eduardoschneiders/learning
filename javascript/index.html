@@ -1,0 +1,75 @@
+<html>
+  <head>
+  </head>
+  <body>
+    <canvas id="canvas"></canvas>
+    <style>
+      body { margin: 0; }
+      canvas { display: block }
+    </style>
+  </body>
+  <script>
+    var canvas = document.getElementById('canvas'),
+        context = canvas.getContext('2d'),
+        width = canvas.width = window.innerWidth + 10000,
+        height = canvas.height = window.innerHeight;
+
+    var radius = 100,
+        x_offset = 150,
+        paths = [
+          [0, 0],
+          [radius * 2, 0],
+          [0, radius * 2],
+          [radius * 2, radius * 2]
+        ];
+
+        for(var i = 0; i < 4; i++){
+          context.beginPath();
+          context.moveTo(paths[i][0] + x_offset, paths[i][1] + x_offset);
+          context.lineTo(radius + x_offset, radius + x_offset);
+          <!-- context.stroke(); -->
+        }
+
+        for(var i = 0; i < 100; i++){
+          context.beginPath();
+          context.moveTo(0, 0);
+          context.lineTo(Math.random() * width * 0.3, Math.random() * height * 0.2);
+          <!-- context.stroke(); -->
+        }
+
+        var scale = 40,
+            repeat_wave = 10;
+
+
+        context.translate(0, height / 2);
+        context.scale(1, -1);
+        context.fillRect(0, 0, (Math.PI * 2) * scale * repeat_wave, 2);
+
+        for(var i = 0; i <= ((Math.PI * 2) * repeat_wave).toFixed(2); i += 0.01){
+          y = (Math.sin(i) * scale);
+          x = i * scale;
+          context.fillRect(x, y, 1, 1);
+
+          var rest = (i.toFixed(2) % (Math.PI * 2).toFixed(2)).toFixed(1);
+
+          if ( rest == 0.0) {
+            context.translate(0, - scale);
+            context.fillRect(x, y, 1, scale * 2);
+            context.translate(0, scale);
+          }
+
+          y2 = (Math.cos(i) * scale);
+          context.fillRect(x, y2, 1, 1);
+
+          y3 = (Math.tan(i) * scale);
+          context.fillRect(x, y3, 1, 1);
+        }
+
+
+        context.scale(1, -1);
+        context.translate(0, - (height / 2));
+
+        context.beginPath();
+        context.fillRect(0, 0, 1000, 30);
+  </script>
+</html>
