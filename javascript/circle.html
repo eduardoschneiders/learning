@@ -17,39 +17,47 @@
     var centerX = width / 2,
       centerY = height / 2,
       radius = 2,
-      yOffset = height * .3 - radius,
-      xOffset = width * .3 - radius,
+      yOffset = height * .5 - radius,
+      xOffset = width * .5 - radius,
       xAngle = 0,
       yAngle = 0,
       xSpeed = 0.03,
-      ySpeed = 0.03;
+      ySpeed = 0.02;
 
 
     var fly = function (e){
       var x = centerX + Math.cos(e['xAngle']) * xOffset * e['offset'];
       var y = centerY + Math.sin(e['yAngle']) * yOffset * e['offset'];
 
-      e['xAngle'] += xSpeed * e['xSpeed'] * .8;
-      e['yAngle'] += ySpeed * e['ySpeed'] * .8;
+      e['xAngle'] += xSpeed * e['xSpeed'];
+      e['yAngle'] += ySpeed * e['ySpeed'];
 
       context.beginPath();
       context.arc(x, y, radius, 0, Math.PI * 2);
       context.fill();
     }
 
-    flies = [];
 
-    for(var i = 0; i <= 200; i += 1){
-      flies.push({
-        xAngle: Math.random() * i,
-        yAngle: Math.random() * i,
+    function generate_fly(i){
+      return {
+        xAngle: Math.random() * i * 5,
+        yAngle: Math.random() * i * 5,
         xSpeed: (Math.random() * .5) + .5,
         ySpeed: (Math.random() * .5) + .5,
         offset: (Math.random() * .5) + .5,
-      })
+      }
     }
 
+    var times = 0;
+    flies = [];
+
     function render(){
+      if (times % 70 == 0 && flies.length <= 100){
+        flies.push(generate_fly(times));
+      }
+
+      times += 1;
+      console.log(flies.length)
       context.clearRect(0, 0, width, height);
       for(var i = 0; i < flies.length; i += 1){
         fly(flies[i])
