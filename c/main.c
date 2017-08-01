@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 
 typedef struct {
   int size;
@@ -6,25 +7,29 @@ typedef struct {
 } task;
 
 void print_memory(char * pmemory, int memory_size){
-  for (int i = 0; i < memory_size; i++){
+  int i;
+  for (i = 0; i < memory_size; i++){
     printf("%c", *(pmemory + i));
   }
 }
 
 void print_tasks(char * ptasks, int tasks_qnt){
-  for (int i = 0; i < tasks_qnt; i++){
+  int i;
+  for (i = 0; i < tasks_qnt; i++){
     printf("%c", *(ptasks + i));
   }
 }
 
 void fill_tasks(char * ptasks, int tasks_qnt){
-  for (int i = 0; i < tasks_qnt; i++){
+  int i;
+  for (i = 0; i < tasks_qnt; i++){
     *(ptasks + i) = '#';
   }
 }
 
 void fill_memory(char * pmemory, int memory_size){
-  for (int i = 0; i < memory_size; i++){
+  int i;
+  for (i = 0; i < memory_size; i++){
     *(pmemory + i) = '_';
   }
 }
@@ -44,12 +49,14 @@ int main(){
   char * ptasks;
   pmemory = memory;
   ptasks = tasks;
+  task * t = malloc(sizeof(task));
+  t->size = 1;
 
- fill_memory(pmemory, memory_size);
- fill_tasks(ptasks, tasks_qnt);
- print_memory(pmemory, memory_size);
- generate_task(ptasks);
- print_tasks(ptasks, tasks_qnt);
+  fill_memory(pmemory, memory_size);
+  fill_tasks(ptasks, tasks_qnt);
+  print_memory(pmemory, memory_size);
+  generate_task(ptasks);
+  print_tasks(ptasks, tasks_qnt);
 
   printf("\n");
   return 0;
