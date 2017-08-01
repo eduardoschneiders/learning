@@ -1,62 +1,72 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 
 typedef struct {
   int size;
   int duration;
+  char character;
 } task;
 
 void print_memory(char * pmemory, int memory_size){
   int i;
   for (i = 0; i < memory_size; i++){
-    printf("%c", *(pmemory + i));
+    printf("%c", pmemory[i]);
   }
 }
 
-void print_tasks(char * ptasks, int tasks_qnt){
+void print_tasks(task * tasks[], int tasks_qnt){
   int i;
   for (i = 0; i < tasks_qnt; i++){
-    printf("%c", *(ptasks + i));
-  }
-}
-
-void fill_tasks(char * ptasks, int tasks_qnt){
-  int i;
-  for (i = 0; i < tasks_qnt; i++){
-    *(ptasks + i) = '#';
+    if (tasks[i] != NULL){
+      int j;
+      for(j = 0; j < tasks[i]->size; j++){
+        printf("%c", tasks[i]->character);
+      }
+    }
   }
 }
 
 void fill_memory(char * pmemory, int memory_size){
   int i;
   for (i = 0; i < memory_size; i++){
-    *(pmemory + i) = '_';
+    pmemory[i] = '_';
   }
 }
 
-void generate_task(char * tasks){
-  *(tasks + 1) = '%';
-  *(tasks + 5) = '0';
-  *(tasks + 2) = '&';
+void generate_task(task *tasks[], int p){
+  task * t = malloc(sizeof(task));
+  t->size = rand() % 10 + 1 ;
+  t->character = rand() % (126-33) + 33;
+
+  tasks[p] = t;
+}
+
+void initialize_tasks(task * tasks[], int tasks_qnt){
+  int i;
+  for(i = 0; i < tasks_qnt; i++){
+    *(tasks + i) = NULL;
+  }
 }
 
 int main(){
+  srand(time(NULL));
   int memory_size = 100;
   int tasks_qnt = 10;
   char memory[memory_size];
-  char tasks[tasks_qnt];
+  task * tasks[tasks_qnt];
   char * pmemory;
-  char * ptasks;
   pmemory = memory;
-  ptasks = tasks;
-  task * t = malloc(sizeof(task));
-  t->size = 1;
 
+  initialize_tasks(tasks, tasks_qnt);
   fill_memory(pmemory, memory_size);
-  fill_tasks(ptasks, tasks_qnt);
+  generate_task(tasks, 0);
+  generate_task(tasks, 1);
+  generate_task(tasks, 2);
+  generate_task(tasks, 4);
+
   print_memory(pmemory, memory_size);
-  generate_task(ptasks);
-  print_tasks(ptasks, tasks_qnt);
+  print_tasks(tasks, tasks_qnt);
 
   printf("\n");
   return 0;
