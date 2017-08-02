@@ -6,6 +6,7 @@ typedef struct {
   int size;
   int duration;
   int location;
+  int allocated;
   char character;
 } task;
 
@@ -32,7 +33,8 @@ void print_tasks(task * tasks[], int tasks_qnt){
   while(tasks[i] != NULL){
     printf("location: %d ", tasks[i]->location);
     printf("size: %d ", tasks[i]->size);
-    printf("char: %c\n", tasks[i]->character);
+    printf("char: %c ", tasks[i]->character);
+    printf("allocated: %d\n", tasks[i]->allocated);
     i++;
   }
 }
@@ -44,10 +46,32 @@ void fill_memory(char * pmemory, int memory_size){
   }
 }
 
+int unique_char(task * tasks[]){
+  int character = rand() % (126-33) + 33;
+  int i = 0;
+
+  int available = 1;
+  while(tasks[i] != NULL){
+    if(character == tasks[i]->character){
+      available = 0;
+      break;
+    }
+
+    i++;
+  }
+
+  if (!available || character == 95){
+    return unique_char(tasks);
+  } else {
+    return character;
+  }
+}
+
 void generate_task(task * tasks[]){
   task * t = malloc(sizeof(task));
-  t->size = rand() % 10 + 1 ;
-  t->character = rand() % (126-33) + 33;
+  t->size = rand() % 10 + 10 ;
+  t->character = unique_char(tasks);
+  t->allocated = 0;
 
   int i = 0;
   while(tasks[i] != NULL){
@@ -64,33 +88,54 @@ void initialize_tasks(task * tasks[], int tasks_qnt){
   }
 }
 
-void alocate_tasks(task * tasks[]){
-  int i = 1;
-  int location = 0;
-
-  task * previous_task = NULL;
-  if (tasks[0] != NULL){
-    tasks[0]->location = 0;
-    previous_task = tasks[0];
+int find_memory_location(int initial_position, int size, char memory[], int memory_size){
+  int i = initial_position;
+  while(memory[i] != '_' && i < memory_size){
+    i++;
   }
 
-  while (tasks[i] != NULL){
-    if (previous_task != NULL){
-      tasks[i]->location = previous_task->location + previous_task->size;
+  int is_memory_available = 1;
+  int j;
+  for (j = i; j < size; j++){
+    if (memory[i] != '_'){
+      is_memory_available = 0;
+      break;
     }
-    previous_task = tasks[i];
-    i++;
+  }
+
+  int return_value = i;
+
+  if (!is_memory_available && (i + size < memory_size)){
+    int return_value = find_memory_location(i + size, size, memory, memory_size);
+  } else if(i + size > memory_size){
+    return_value = -1;
+  }
+
+  return return_value;
+}
+
+void add_task_to_memory(char memory[], task *task){
+  int i = 0;
+  for (i = task->location; i < task->location + task->size; i++){
+    memory[i] = task->character;
   }
 }
 
-
-void add_tasks_to_memory(char memory[], task * tasks[]){
+void alocate_tasks(task * tasks[], char memory[], int memory_size){
   int i = 0;
-  while(tasks[i] != NULL){
-    int j = 0;;
-    for(j = tasks[i]->location; j < tasks[i]->location + tasks[i]->size; j++){
-      memory[j] = tasks[i]->character;
+  while (tasks[i] != NULL){
+    if (tasks[i]->allocated == 0){
+      int location = find_memory_location(0, tasks[i]->size, memory, memory_size);
+      if (location != -1){
+        tasks[i]->location = location;
+        tasks[i]->allocated = 1;
+      } else {
+        break;
+      }
     }
+
+    task * t = tasks[i];
+    add_task_to_memory(memory, t);
     i++;
   }
 }
@@ -98,7 +143,7 @@ void add_tasks_to_memory(char memory[], task * tasks[]){
 int main(){
   srand(time(NULL));
   int memory_size = 100;
-  int tasks_qnt = 10;
+  int tasks_qnt = 15;
   char memory[memory_size];
   task * tasks[tasks_qnt];
 
@@ -126,9 +171,13 @@ int main(){
   generate_task(tasks);
   generate_task(tasks);
   generate_task(tasks);
+  generate_task(tasks);
+  generate_task(tasks);
+  generate_task(tasks);
+  generate_task(tasks);
+  generate_task(tasks);
 
-  alocate_tasks(tasks);
-  add_tasks_to_memory(memory, tasks);
+  alocate_tasks(tasks, memory, memory_size);
   print_memory(memory, memory_size);
   print_tasks(tasks, tasks_qnt);
 
