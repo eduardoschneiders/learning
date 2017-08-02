@@ -64,7 +64,7 @@ void initialize_tasks(task * tasks[], int tasks_qnt){
   }
 }
 
-void locate_tasks(task * tasks[]){
+void alocate_tasks(task * tasks[]){
   int i = 1;
   int location = 0;
 
@@ -85,17 +85,14 @@ void locate_tasks(task * tasks[]){
 
 
 void add_tasks_to_memory(char memory[], task * tasks[]){
-  printf("\n\n\n");
   int i = 0;
   while(tasks[i] != NULL){
-    int j;
-    for(j = tasks[i]->location; j < tasks[i]->size; j++){
-      printf("%d -> %c\n", j, tasks[i]->character);
+    int j = 0;;
+    for(j = tasks[i]->location; j < tasks[i]->location + tasks[i]->size; j++){
       memory[j] = tasks[i]->character;
     }
     i++;
   }
-  printf("\n\n\n");
 }
 
 int main(){
@@ -126,8 +123,11 @@ int main(){
   generate_task(tasks);
   generate_task(tasks);
   generate_task(tasks);
+  generate_task(tasks);
+  generate_task(tasks);
+  generate_task(tasks);
 
-  locate_tasks(tasks);
+  alocate_tasks(tasks);
   add_tasks_to_memory(memory, tasks);
   print_memory(memory, memory_size);
   print_tasks(tasks, tasks_qnt);
