@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <unistd.h>
+
 
 typedef struct {
   int size;
@@ -23,7 +25,7 @@ void print_tasks(task * tasks[], int tasks_qnt){
   while(tasks[i] != NULL){
     int j;
     for(j = 0; j < tasks[i]->size; j++){
-      printf("%c", tasks[i]->character);
+      /* printf("%c", tasks[i]->character); */
     }
     i++;
   }
@@ -34,6 +36,7 @@ void print_tasks(task * tasks[], int tasks_qnt){
     printf("location: %d ", tasks[i]->location);
     printf("size: %d ", tasks[i]->size);
     printf("char: %c ", tasks[i]->character);
+    printf("duration: %d ", tasks[i]->duration);
     printf("allocated: %d\n", tasks[i]->allocated);
     i++;
   }
@@ -67,9 +70,10 @@ int unique_char(task * tasks[]){
   }
 }
 
-void generate_task(task * tasks[]){
+void generate_task(task * tasks[], int tasks_qnt){
   task * t = malloc(sizeof(task));
   t->size = rand() % 10 + 10 ;
+  t->duration = rand() % 10 + 1 ;
   t->character = unique_char(tasks);
   t->allocated = 0;
 
@@ -78,7 +82,9 @@ void generate_task(task * tasks[]){
     i++;
   }
 
-  tasks[i] = t;
+  if (i < tasks_qnt){
+    tasks[i] = t;
+  }
 }
 
 void initialize_tasks(task * tasks[], int tasks_qnt){
@@ -121,7 +127,14 @@ void add_task_to_memory(char memory[], task *task){
   }
 }
 
-void alocate_tasks(task * tasks[], char memory[], int memory_size){
+void remove_task_from_memory(char memory[], int location, int size){
+  int i = 0;
+  for (i = location; i < location + size; i++){
+    memory[i] = '_';
+  }
+}
+
+void alocate_tasks(task * tasks[], char memory[], int memory_size, int tasks_qnt){
   int i = 0;
   while (tasks[i] != NULL){
     if (tasks[i]->allocated == 0){
@@ -132,17 +145,34 @@ void alocate_tasks(task * tasks[], char memory[], int memory_size){
       } else {
         break;
       }
+    } else {
+      tasks[i]->duration--;
     }
 
-    task * t = tasks[i];
-    add_task_to_memory(memory, t);
+    if (tasks[i]->duration == 0){
+      remove_task_from_memory(memory, tasks[i]->location, tasks[i]->size);
+
+      int current = i;
+      while(tasks[current + 1] != NULL){
+        tasks[current] = tasks[current + 1];
+        current++;
+      }
+
+      tasks[current] = NULL;
+    }
+
+
+    if (tasks[i] != NULL){
+      task * t = tasks[i];
+      add_task_to_memory(memory, t);
+    }
     i++;
   }
 }
 
 int main(){
   srand(time(NULL));
-  int memory_size = 100;
+  int memory_size = 150;
   int tasks_qnt = 15;
   char memory[memory_size];
   task * tasks[tasks_qnt];
@@ -162,24 +192,18 @@ int main(){
 
   initialize_tasks(tasks, tasks_qnt);
   fill_memory(memory, memory_size);
-  generate_task(tasks);
-  generate_task(tasks);
-  generate_task(tasks);
-  generate_task(tasks);
-  generate_task(tasks);
-  generate_task(tasks);
-  generate_task(tasks);
-  generate_task(tasks);
-  generate_task(tasks);
-  generate_task(tasks);
-  generate_task(tasks);
-  generate_task(tasks);
-  generate_task(tasks);
-  generate_task(tasks);
+  int t = 1;
 
-  alocate_tasks(tasks, memory, memory_size);
-  print_memory(memory, memory_size);
-  print_tasks(tasks, tasks_qnt);
+  while (t){
+    system("clear");
+    generate_task(tasks, tasks_qnt);
+    alocate_tasks(tasks, memory, memory_size, tasks_qnt);
+    print_memory(memory, memory_size);
+    print_tasks(tasks, tasks_qnt);
+
+    sleep(2);
+    t++;
+  }
 
   printf("\n");
   return 0;
