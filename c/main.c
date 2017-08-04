@@ -70,19 +70,34 @@ int unique_char(task * tasks[]){
   }
 }
 
-void generate_task(task * tasks[], int tasks_qnt){
+void generate_task(task * tasks[], int tasks_qnt, char character, int location, int size, int duration){
   task * t = malloc(sizeof(task));
-  t->size = rand() % 10 + 10 ;
-  t->duration = rand() % 10 + 1 ;
+
+  t->size = rand() % 50 + 30;
+  t->duration = rand() % 10 + 25;
   t->character = unique_char(tasks);
   t->allocated = 0;
+
+  if (size != 0)
+    t->size = size;
+
+  if (duration != 0)
+    t->duration = duration;
+
+  if (character != '0')
+    t->character = character;
+
+  if (location != 0) {
+    t->location = location;
+    t->allocated = 1;
+  }
 
   int i = 0;
   while(tasks[i] != NULL){
     i++;
   }
 
-  if (i < tasks_qnt){
+  if (i < tasks_qnt - 1){
     tasks[i] = t;
   }
 }
@@ -95,29 +110,30 @@ void initialize_tasks(task * tasks[], int tasks_qnt){
 }
 
 int find_memory_location(int initial_position, int size, char memory[], int memory_size){
-  int i = initial_position;
-  while(memory[i] != '_' && i < memory_size){
-    i++;
+  int current_position = initial_position;
+  while(memory[current_position] != '_' && current_position < memory_size){
+    current_position++;
   }
 
   int is_memory_available = 1;
-  int j;
-  for (j = i; j < size; j++){
-    if (memory[i] != '_'){
+  int offset_position = current_position;
+
+  for (offset_position = current_position; offset_position < current_position + size; offset_position++){
+    if (offset_position >= (memory_size - 1) || memory[offset_position] != '_'){
       is_memory_available = 0;
       break;
     }
   }
 
-  int return_value = i;
-
-  if (!is_memory_available && (i + size < memory_size)){
-    int return_value = find_memory_location(i + size, size, memory, memory_size);
-  } else if(i + size > memory_size){
-    return_value = -1;
+  if (is_memory_available != 0){
+    return current_position;
+  } else {
+    if (offset_position >= (memory_size - 1)){
+      return -1;
+    } else {
+      return find_memory_location(offset_position, size, memory, memory_size);
+    }
   }
-
-  return return_value;
 }
 
 void add_task_to_memory(char memory[], task *task){
@@ -172,7 +188,7 @@ void alocate_tasks(task * tasks[], char memory[], int memory_size, int tasks_qnt
 
 int main(){
   srand(time(NULL));
-  int memory_size = 150;
+  int memory_size = 636;
   int tasks_qnt = 15;
   char memory[memory_size];
   task * tasks[tasks_qnt];
@@ -192,17 +208,17 @@ int main(){
 
   initialize_tasks(tasks, tasks_qnt);
   fill_memory(memory, memory_size);
-  int t = 1;
+  int keep_running = 1;
 
-  while (t){
+  while (keep_running && 1){
     system("clear");
-    generate_task(tasks, tasks_qnt);
+    generate_task(tasks, tasks_qnt, '0', 0, 0, 0);
     alocate_tasks(tasks, memory, memory_size, tasks_qnt);
     print_memory(memory, memory_size);
     print_tasks(tasks, tasks_qnt);
 
-    sleep(2);
-    t++;
+    sleep(1);
+    keep_running++;
   }
 
   printf("\n");
