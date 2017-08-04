@@ -19,6 +19,18 @@ void print_memory(char * pmemory, int memory_size){
   }
 }
 
+int memory_empty(char memory[], int memory_size){
+  int i;
+  for (i = 0; i < memory_size; i++){
+    if (memory[i] != '_'){
+      return 0;
+      break;
+    }
+  }
+
+  return 1;
+}
+
 void print_tasks(task * tasks[], int tasks_qnt){
   int i = 0;
   printf("\n");
@@ -73,7 +85,7 @@ int unique_char(task * tasks[]){
 void generate_task(task * tasks[], int tasks_qnt, char character, int location, int size, int duration){
   task * t = malloc(sizeof(task));
 
-  t->size = rand() % 50 + 30;
+  t->size = rand() % 100 + 15;
   t->duration = rand() % 10 + 25;
   t->character = unique_char(tasks);
   t->allocated = 0;
@@ -212,13 +224,18 @@ int main(){
 
   while (keep_running && 1){
     system("clear");
-    generate_task(tasks, tasks_qnt, '0', 0, 0, 0);
+    if (keep_running < 20)
+      generate_task(tasks, tasks_qnt, '0', 0, 0, 0);
     alocate_tasks(tasks, memory, memory_size, tasks_qnt);
     print_memory(memory, memory_size);
     print_tasks(tasks, tasks_qnt);
 
     sleep(1);
     keep_running++;
+
+    if (memory_empty(memory, memory_size)){
+      keep_running = 0;
+    }
   }
 
   printf("\n");
