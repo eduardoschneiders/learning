@@ -36,10 +36,8 @@ void print_memory(char memory[], int memory_size){
 int is_memory_empty(char memory[], int memory_size){
   int i;
   for (i = 0; i < memory_size; i++){
-    if (memory[i] != '_'){
+    if (memory[i] != '_')
       return 0;
-      break;
-    }
   }
 
   return 1;
