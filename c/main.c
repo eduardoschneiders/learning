@@ -33,17 +33,8 @@ int memory_empty(char memory[], int memory_size){
 
 void print_tasks(task * tasks[], int tasks_qnt){
   int i = 0;
-  printf("\n");
-  while(tasks[i] != NULL){
-    int j;
-    for(j = 0; j < tasks[i]->size; j++){
-      /* printf("%c", tasks[i]->character); */
-    }
-    i++;
-  }
+  printf("\n\n");
 
-  i = 0;
-  printf("\n");
   while(tasks[i] != NULL){
     printf("location: %d ", tasks[i]->location);
     printf("size: %d ", tasks[i]->size);
@@ -162,44 +153,50 @@ void remove_task_from_memory(char memory[], int location, int size){
   }
 }
 
-void alocate_tasks(task * tasks[], char memory[], int memory_size, int tasks_qnt){
+void remove_offset_on_tasks(int current, task * tasks[]){
+  while(tasks[current + 1] != NULL){
+    tasks[current] = tasks[current + 1];
+    current++;
+  }
+
+  tasks[current] = NULL;
+}
+
+void try_to_allocate_task(task * task, char memory[], int memory_size){
+  int location = find_memory_location(0, task->size, memory, memory_size);
+  if (location != -1){
+    task->location = location;
+    task->allocated = 1;
+  }
+}
+
+void allocate_tasks(task * tasks[], char memory[], int memory_size, int tasks_qnt){
   int i = 0;
   while (tasks[i] != NULL){
     if (tasks[i]->allocated == 0){
-      int location = find_memory_location(0, tasks[i]->size, memory, memory_size);
-      if (location != -1){
-        tasks[i]->location = location;
-        tasks[i]->allocated = 1;
-      } else {
-        break;
-      }
+     try_to_allocate_task(tasks[i], memory, memory_size);
     } else {
       tasks[i]->duration--;
     }
 
     if (tasks[i]->duration == 0){
       remove_task_from_memory(memory, tasks[i]->location, tasks[i]->size);
-
-      int current = i;
-      while(tasks[current + 1] != NULL){
-        tasks[current] = tasks[current + 1];
-        current++;
-      }
-
-      tasks[current] = NULL;
+      remove_offset_on_tasks(i, tasks);
     }
 
 
-    if (tasks[i] != NULL){
-      task * t = tasks[i];
-      add_task_to_memory(memory, t);
+    if (tasks[i] != NULL && tasks[i]->allocated){
+      add_task_to_memory(memory, tasks[i]);
     }
+
     i++;
   }
 }
 
 int main(){
   srand(time(NULL));
+  int total_tasks = 0;
+  int keep_running = 1;
   int memory_size = 636;
   int tasks_qnt = 15;
   char memory[memory_size];
@@ -220,22 +217,20 @@ int main(){
 
   initialize_tasks(tasks, tasks_qnt);
   fill_memory(memory, memory_size);
-  int keep_running = 1;
 
   while (keep_running && 1){
     system("clear");
-    if (keep_running < 20)
+
+    if (total_tasks < 20)
       generate_task(tasks, tasks_qnt, '0', 0, 0, 0);
-    alocate_tasks(tasks, memory, memory_size, tasks_qnt);
+
+    allocate_tasks(tasks, memory, memory_size, tasks_qnt);
     print_memory(memory, memory_size);
     print_tasks(tasks, tasks_qnt);
 
     sleep(1);
-    keep_running++;
-
-    if (memory_empty(memory, memory_size)){
-      keep_running = 0;
-    }
+    total_tasks++;
+    keep_running = !memory_empty(memory, memory_size);
   }
 
   printf("\n");
