@@ -93,9 +93,19 @@ end
 
 expected = [[1,2,3],[4,5,6],[7,8,nil]]
 mixed = [
-  [1,5,3],
-  [4,2,6],
-  [nil,7,8]
+  [nil,2,3],
+  [1,5,6],
+  [4,7,8]
+]
+expected = [
+  [1,2,3],
+  [8,nil,4],
+  [7,6,5]
+]
+mixed = [
+  [2,8,3],
+  [1,6,4],
+  [7,nil,5]
 ]
 # mixed = [[4,7,8],[1,5,3],[6,2,nil]]
 
@@ -105,7 +115,8 @@ diff = table.sum_diff
 while (diff != 0) do
   selected_action = nil
 
-  [:down, :up, :left, :right].each do |action|
+  possible_actions = [:up, :right, :down, :left]
+  possible_actions.each do |action|
     lines = Marshal::load(Marshal.dump(table.lines))
     t = Table.new(3, lines, expected)
     t.move(action)
@@ -116,7 +127,16 @@ while (diff != 0) do
       selected_action = action
     end
   end
-
-  table.move(selected_action, true) if selected_action
+  if selected_action
+    table.move(selected_action, true) 
+  else
+    line, collumn =  table.find_blank_position()
+    actions = possible_actions
+    actions[2] = nil if line == 0
+    actions[0] if line == 2
+    actions[1] if collumn == 0
+    actions[3] if collumn == 2
+    table.move(actions.compact.sample, true)
+  end
   diff = table.sum_diff
 end
