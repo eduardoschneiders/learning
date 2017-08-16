@@ -9,29 +9,21 @@ require 'pry'
 class Table
   attr_accessor :size, :original_matrix, :expected_matrix
 
-  def initialize(original_matrix, expected_matrix)
+  def initialize(original_matrix, expected_matrix, make_draw = true)
     @original_matrix = original_matrix
     @expected_matrix = expected_matrix
     @size = original_matrix.size
+
+    draw if make_draw
   end
 
   def score
     score = 0
 
-    # expected_matrix.each do |expected_line|
-    #   expected_line.each do |expected_collumn|
-    #     found_line, found_collumn = find_position(expected_collumn)
-    #     diff = (found_line - line).abs + (found_collumn - collumn).abs
-    #     score += diff
-    #   end
-    # end
-
-    # score
-
     (0..size-1).each do |expected_line|
       (0..size-1).each do |expected_collumn|
-        if item = expected_matrix[expected_line][expected_collumn]
-          found_line, found_collumn = find_position(item)
+        if expected_number = expected_matrix[expected_line][expected_collumn]
+          found_line, found_collumn = find_position(expected_number)
           diff = (found_line - expected_line).abs + (found_collumn - expected_collumn).abs
           score += diff
         end
@@ -42,8 +34,8 @@ class Table
   end
 
   def find_position(item)
-    (0..@size-1).each do |line|
-      (0..@size-1).each do |collumn|
+    (0..size-1).each do |line|
+      (0..size-1).each do |collumn|
         if original_matrix[line][collumn] == item
           return [line, collumn]
         end
@@ -55,40 +47,54 @@ class Table
     find_position(nil)
   end
 
-  def down
-    line, collumn = find_blank_position
+  def position_inside_range(position)
+    (position) >= 0 && (position) < size
+  end
 
-    if (line - 1 >= 0)
-      original_matrix[line][collumn] = original_matrix[line - 1][collumn]
-      original_matrix[line - 1][collumn] = nil
+  def possible_moves
+    moves = [:down, :up, :left, :right]
+    blank_line, blank_collumn = find_blank_position
+
+    moves.delete(:down) if blank_line <= 0
+    moves.delete(:up) if blank_line >= size - 1
+    moves.delete(:left) if blank_collumn >= size - 1
+    moves.delete(:right) if blank_collumn <= 0
+
+    moves
+  end
+
+  def swap_line(offset)
+    blank_line, blank_collumn = find_blank_position
+
+    if position_inside_range(blank_line + offset)
+      original_matrix[blank_line][blank_collumn] = original_matrix[blank_line + offset][blank_collumn]
+      original_matrix[blank_line + offset][blank_collumn] = nil
     end
+  end
+
+  def swap_collumn(offset)
+    blank_line, blank_collumn = find_blank_position
+
+    if position_inside_range(blank_collumn + offset)
+      original_matrix[blank_line][blank_collumn] = original_matrix[blank_line][blank_collumn + offset]
+      original_matrix[blank_line][blank_collumn + offset] = nil
+    end
+  end
+
+  def down
+    swap_line(-1)
   end
 
   def up
-    line, collumn = find_blank_position
-
-    if (line + 1 < size)
-      original_matrix[line][collumn] = original_matrix[line + 1][collumn]
-      original_matrix[line + 1][collumn] = nil
-    end
+    swap_line(1)
   end
 
   def left
-    line, collumn = find_blank_position
-
-    if (collumn + 1 < size)
-      original_matrix[line][collumn] = original_matrix[line][collumn + 1]
-      original_matrix[line][collumn + 1] = nil
-    end
+    swap_collumn(1)
   end
 
   def right
-    line, collumn = find_blank_position
-
-    if (collumn - 1 >= 0)
-      original_matrix[line][collumn] = original_matrix[line][collumn - 1]
-      original_matrix[line][collumn - 1] = nil
-    end
+    swap_collumn(-1)
   end
 
   def move(action, make_draw = false)
@@ -97,12 +103,12 @@ class Table
   end
 
   def draw(action = 'initialization')
-    puts "\n-------> #{action}"
+    puts "\n------ #{action.upcase} ------"
     original_matrix.each { |line| p line }
   end
 
   def duplicate
-    new(Marshal::load(Marshal.dump(original_matrix)), expected_matrix)
+    self.class.new(Marshal::load(Marshal.dump(original_matrix)), expected_matrix, false)
   end
 end
 
@@ -123,7 +129,7 @@ score = table.score
 while (score != 0) do
   selected_action = nil
 
-  [:up, :right, :down, :left].each do |action|
+  table.possible_moves.each do |action|
     current_score = score
     new_table = table.duplicate
     new_table.move(action)
@@ -134,7 +140,7 @@ while (score != 0) do
     end
   end
 
-  table.move(selected_action, true)
+  table.move(selected_action, true) if selected_action
   score = table.score
 end
 
