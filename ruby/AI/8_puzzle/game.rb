@@ -112,6 +112,17 @@ class Table
   end
 end
 
+
+class MovesHistory
+  attr_accessor :state, :nodes, :action
+
+  def initialize(state, action)
+    @state = state
+    @action = action
+    @nodes = []
+  end
+end
+
 expected_matrix = [
   [1,2,3],
   [8,nil,4],
@@ -125,6 +136,10 @@ original_matrix = [
 
 table = Table.new(original_matrix, expected_matrix)
 score = table.score
+
+moves_history = MovesHistory.new(table.duplicate.original_matrix, nil)
+
+last_history = moves_history
 
 while (score != 0) do
   selected_action = nil
@@ -140,8 +155,19 @@ while (score != 0) do
     end
   end
 
-  table.move(selected_action, true) if selected_action
+  if selected_action
+    table.move(selected_action, true)
+
+    current_histoy = MovesHistory.new(table.duplicate.original_matrix,  selected_action)
+    last_history.nodes << current_histoy
+    last_history = current_histoy
+  else
+    table = moves_history.find_next_state
+  end
+
   score = table.score
 end
+
+binding.pry
 
 p 'Ended'
