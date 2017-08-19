@@ -110,16 +110,25 @@ class Table
   def duplicate
     self.class.new(Marshal::load(Marshal.dump(original_matrix)), expected_matrix, false)
   end
+
+  def hash
+    original_matrix.hash
+  end
 end
 
 
-class MovesHistory
-  attr_accessor :state, :nodes, :action
+class Node
+  attr_accessor :table, :hash, :finished, :nodes
 
-  def initialize(state, action)
-    @state = state
-    @action = action
+  def initialize(table)
+    @table = table
+    @finished = false
     @nodes = []
+    @hash = table.hash
+  end
+
+  def finish
+    finished = true
   end
 end
 
@@ -136,8 +145,10 @@ original_matrix = [
 
 table = Table.new(original_matrix, expected_matrix)
 score = table.score
+ = []
 
 moves_history = MovesHistory.new(table.duplicate.original_matrix, nil)
+moves_hashes << table.hash
 
 last_history = moves_history
 
@@ -162,12 +173,29 @@ while (score != 0) do
     last_history.nodes << current_histoy
     last_history = current_histoy
   else
-    table = moves_history.find_next_state
+    last_history.finished
+    table = moves_history.state
   end
 
   score = table.score
 end
 
-binding.pry
-
 p 'Ended'
+
+# - get node
+# - check possible moves
+
+# - if find next move not in child
+#                   move hash not in moves_hashes
+#                   (finished: true, hash: hash)
+#   - make the move
+#   - moves_hashes << move hash
+#   - if not in child
+#       - add new node
+#   - current_node => node
+# else
+#   - mark as finished
+#   - current_node => root_node
+
+
+
