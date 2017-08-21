@@ -118,17 +118,16 @@ end
 
 
 class Node
-  attr_accessor :table, :hash, :finished, :nodes
+  attr_accessor :hash, :finished, :nodes
 
-  def initialize(table)
-    @table = table
+  def initialize(hash)
+    @hash = hash
     @finished = false
     @nodes = []
-    @hash = table.hash
   end
 
   def finish
-    finished = true
+    @finished = true
   end
 end
 
@@ -139,46 +138,60 @@ expected_matrix = [
 ]
 original_matrix = [
   [2,8,3],
-  [1,6,4],
+  [1,4,6],
   [7,nil,5]
 ]
 
-table = Table.new(original_matrix, expected_matrix)
-score = table.score
- = []
+root_table   = Table.new(original_matrix, expected_matrix)
+root_node    = Node.new(root_table.hash)
+score        = root_table.score
+moves_hashes = []
 
-moves_history = MovesHistory.new(table.duplicate.original_matrix, nil)
-moves_hashes << table.hash
+moves_hashes << root_table.hash
+current_node = root_node
+table        = root_table.duplicate
 
-last_history = moves_history
-
-while (score != 0) do
-  selected_action = nil
-
-  table.possible_moves.each do |action|
-    current_score = score
+while (score != 0 && !root_node.finished) do
+  a = table.possible_moves.map do |move|
     new_table = table.duplicate
-    new_table.move(action)
+    new_table.move(move)
 
-    if new_table.score < current_score
-      current_score = new_table.score
-      selected_action = action
+    { move: move, hash: new_table.hash, score: new_table.score }
+  end
+
+    binding.pry if @a
+  b = a.select do |move|
+    !current_node.nodes.any? { |node| node.hash == move[:hash] && node.finished }
+  end
+
+  next_move = b.sort_by do |move|
+    move[:score]
+  end.first
+    child_nodes_finished = current_node.nodes.all? { |node| node.hash == move[:hash] && node.finished }
+
+  # binding.pry if @a
+  if next_move
+    table.move(next_move[:move], true)
+    score = table.score
+    moves_hashes << table.hash
+
+    unless next_node = current_node.nodes.find { |node| node.hash == table.hash }
+     next_node = Node.new(table.hash)
+     current_node.nodes << next_node
     end
-  end
 
-  if selected_action
-    table.move(selected_action, true)
-
-    current_histoy = MovesHistory.new(table.duplicate.original_matrix,  selected_action)
-    last_history.nodes << current_histoy
-    last_history = current_histoy
+     current_node = next_node
   else
-    last_history.finished
-    table = moves_history.state
+    p '================= FROM TOP ===================='
+    @a = false
+    current_node.finish
+    current_node = root_node
+    table = root_table
   end
-
-  score = table.score
+  p score
+  sleep(0.1)
 end
+binding.pry
 
 p 'Ended'
 
