@@ -118,10 +118,11 @@ end
 
 
 class Node
-  attr_accessor :hash, :finished, :nodes
+  attr_accessor :table, :hash, :finished, :nodes
 
-  def initialize(hash)
-    @hash = hash
+  def initialize(table)
+    @table = table.duplicate
+    @hash = table.hash
     @finished = false
     @nodes = []
   end
@@ -132,54 +133,45 @@ class Node
 end
 
 expected_matrix = [
-  [1,2,nil],
-  [3,4,5],
-  [6,7,8]
+  [1,2,3],
+  [4,5,6],
+  [7,8,nil]
 ]
 original_matrix = [
-  [7,2,4],
+  [6,4,7],
   [8,5,nil],
-  [3,1,6]
+  [3,2,1]
 ]
 
 root_table   = Table.new(original_matrix, expected_matrix)
-root_node    = Node.new(root_table.hash)
-score        = root_table.score
-moves_hashes = []
-binding.pry
-moves_hashes << root_table.hash
-current_node = root_node
-table        = root_table.duplicate
+current_node = root_node = Node.new(root_table)
+moves_hashes = [root_table.hash]
 
-while (score != 0 && !root_node.finished) do
-  next_move = table.possible_moves.map do |move|
-    new_table = table.duplicate
+while (current_node.table.score != 0 && !root_node.finished) do
+  next_move = current_node.table.possible_moves.map do |move|
+    new_table = current_node.table.duplicate
     new_table.move(move)
 
-    { move: move, hash: new_table.hash, score: new_table.score }
+    { move: move, hash: new_table.hash, table: new_table }
   end.select do |move|
     !moves_hashes.include?(move[:hash]) && !current_node.nodes.any? { |node| node.hash == move[:hash] && node.finished }
   end.sort_by do |move|
-    move[:score]
+    move[:table].score
   end.first
 
-
   if next_move
-    table.move(next_move[:move], true)
-    score = table.score
-    moves_hashes << table.hash
-
-    unless next_node = current_node.nodes.find { |node| node.hash == table.hash }
-     next_node = Node.new(table.hash)
-     current_node.nodes << next_node
+    unless next_node = current_node.nodes.find { |node| node.hash == next_move[:hash] }
+      next_node = Node.new(next_move[:table])
+      current_node.nodes << next_node
     end
 
-     current_node = next_node
+    current_node = next_node
+    moves_hashes << current_node.table.hash
+    current_node.table.draw(next_move[:move])
   else
     p '================= FROM TOP ===================='
     current_node.finish
     current_node = root_node
-    table = root_table
     moves_hashes = []
   end
 
