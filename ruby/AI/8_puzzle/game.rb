@@ -1,6 +1,7 @@
 #!/usr/bin/env ruby
 
 require 'pry'
+require 'graphviz'
 
 # [1 2 3]
 # [4 5 6]
@@ -118,13 +119,14 @@ end
 
 
 class Node
-  attr_accessor :table, :hash, :finished, :nodes
+  attr_accessor :table, :hash, :move, :finished, :nodes
 
-  def initialize(table)
+  def initialize(table, move)
     @table = table.duplicate
     @hash = table.hash
     @finished = false
     @nodes = []
+    @move = move
   end
 
   def finish
@@ -144,7 +146,7 @@ original_matrix = [
 ]
 
 root_table   = Table.new(original_matrix, expected_matrix)
-current_node = root_node = Node.new(root_table)
+current_node = root_node = Node.new(root_table, 'init')
 moves_hashes = [root_table.hash]
 
 while (current_node.table.score != 0 && !root_node.finished) do
@@ -161,7 +163,7 @@ while (current_node.table.score != 0 && !root_node.finished) do
 
   if next_move
     unless next_node = current_node.nodes.find { |node| node.hash == next_move[:hash] }
-      next_node = Node.new(next_move[:table])
+      next_node = Node.new(next_move[:table], next_move[:move])
       current_node.nodes << next_node
     end
 
@@ -175,7 +177,30 @@ while (current_node.table.score != 0 && !root_node.finished) do
     moves_hashes = []
   end
 
-  sleep(0.1)
+
+
+  g = GraphViz.new( :G, :type => :digraph )
+
+
+  f = Proc.new do |g, node|
+    rn = g.add_node(node.move.to_s)
+
+    node.nodes.each do |nod|
+      n = g.add_nodes(nod.move.to_s)
+      g.add_edges(rn, n)
+      f.call(g, nod)
+    end
+
+    rn
+  end
+
+
+  n = f.call(g, root_node)
+  binding.pry
+
+  g.output(png: "graph.png")
+
+  sleep(0.5)
 end
 
 p 'Ended'
