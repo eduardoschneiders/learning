@@ -132,44 +132,38 @@ class Node
 end
 
 expected_matrix = [
-  [1,2,3],
-  [8,nil,4],
-  [7,6,5]
+  [1,2,nil],
+  [3,4,5],
+  [6,7,8]
 ]
 original_matrix = [
-  [2,8,3],
-  [1,4,6],
-  [7,nil,5]
+  [7,2,4],
+  [8,5,nil],
+  [3,1,6]
 ]
 
 root_table   = Table.new(original_matrix, expected_matrix)
 root_node    = Node.new(root_table.hash)
 score        = root_table.score
 moves_hashes = []
-
+binding.pry
 moves_hashes << root_table.hash
 current_node = root_node
 table        = root_table.duplicate
 
 while (score != 0 && !root_node.finished) do
-  a = table.possible_moves.map do |move|
+  next_move = table.possible_moves.map do |move|
     new_table = table.duplicate
     new_table.move(move)
 
     { move: move, hash: new_table.hash, score: new_table.score }
-  end
-
-    binding.pry if @a
-  b = a.select do |move|
-    !current_node.nodes.any? { |node| node.hash == move[:hash] && node.finished }
-  end
-
-  next_move = b.sort_by do |move|
+  end.select do |move|
+    !moves_hashes.include?(move[:hash]) && !current_node.nodes.any? { |node| node.hash == move[:hash] && node.finished }
+  end.sort_by do |move|
     move[:score]
   end.first
-    child_nodes_finished = current_node.nodes.all? { |node| node.hash == move[:hash] && node.finished }
 
-  # binding.pry if @a
+
   if next_move
     table.move(next_move[:move], true)
     score = table.score
@@ -183,15 +177,14 @@ while (score != 0 && !root_node.finished) do
      current_node = next_node
   else
     p '================= FROM TOP ===================='
-    @a = false
     current_node.finish
     current_node = root_node
     table = root_table
+    moves_hashes = []
   end
-  p score
+
   sleep(0.1)
 end
-binding.pry
 
 p 'Ended'
 
