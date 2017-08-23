@@ -145,6 +145,24 @@ original_matrix = [
   [3,2,1]
 ]
 
+node_name = Proc.new do |node|
+  name = node.move.to_s + node.hash.to_s[0..5]
+  name << '-> finished' if node.finished
+
+  name
+end
+
+generate_graph= Proc.new do |g, node|
+  rn = g.add_node(node_name.call(node))
+
+  node.nodes.each do |node|
+    ch = generate_graph.call(g, node)
+    g.add_edges(rn, ch)
+  end
+
+  rn
+end
+
 root_table   = Table.new(original_matrix, expected_matrix)
 current_node = root_node = Node.new(root_table, 'init')
 moves_hashes = [root_table.hash]
@@ -174,34 +192,15 @@ while (current_node.table.score != 0 && !root_node.finished) do
     p '================= FROM TOP ===================='
     current_node.finish
     current_node = root_node
-    moves_hashes = []
+    moves_hashes = [root_table.hash]
   end
-
-
-
-  g = GraphViz.new( :G, :type => :digraph )
-
-
-  f = Proc.new do |g, node|
-    rn = g.add_node(node.move.to_s)
-
-    node.nodes.each do |nod|
-      n = g.add_nodes(nod.move.to_s)
-      g.add_edges(rn, n)
-      f.call(g, nod)
-    end
-
-    rn
-  end
-
-
-  n = f.call(g, root_node)
-  binding.pry
-
-  g.output(png: "graph.png")
 
   sleep(0.5)
 end
+
+g = GraphViz.new( :G, :type => :digraph )
+n = generate_graph.call(g, root_node)
+g.output(jpg: "graph.jpg")
 
 p 'Ended'
 
