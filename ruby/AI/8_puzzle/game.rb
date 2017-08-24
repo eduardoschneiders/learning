@@ -145,15 +145,13 @@ original_matrix = [
   [3,2,1]
 ]
 
-node_name = Proc.new do |node|
-  name = node.move.to_s + node.hash.to_s[0..5]
-  name << '-> finished' if node.finished
-
-  name
-end
-
 generate_graph= Proc.new do |g, node|
-  rn = g.add_node(node_name.call(node))
+
+  node_id = node.move.to_s + node.hash.to_s[0..5]
+  options = { label: node.move.to_s + ' ' + node.table.score.to_s }
+  options.merge!(style: 'filled') if node.finished
+
+  rn = g.add_node(node_id, options)
 
   node.nodes.each do |node|
     ch = generate_graph.call(g, node)
@@ -168,22 +166,29 @@ current_node = root_node = Node.new(root_table, 'init')
 moves_hashes = [root_table.hash]
 
 while (current_node.table.score != 0 && !root_node.finished) do
-  next_move = current_node.table.possible_moves.map do |move|
+  possible_moves = current_node.table.possible_moves.map do |move|
     new_table = current_node.table.duplicate
     new_table.move(move)
 
     { move: move, hash: new_table.hash, table: new_table }
-  end.select do |move|
+  end
+
+  next_move = possible_moves.select do |move|
     !moves_hashes.include?(move[:hash]) && !current_node.nodes.any? { |node| node.hash == move[:hash] && node.finished }
   end.sort_by do |move|
     move[:table].score
   end.first
 
   if next_move
-    unless next_node = current_node.nodes.find { |node| node.hash == next_move[:hash] }
-      next_node = Node.new(next_move[:table], next_move[:move])
+    possible_moves.select do |move|
+      !current_node.nodes.find { |node| node.hash ==move[:hash] }
+    end.each do |move|
+      next_node = Node.new(move[:table], move[:move])
+      next_node.finish if moves_hashes.include?(move[:hash])
       current_node.nodes << next_node
     end
+
+    next_node = current_node.nodes.find { |node| node.hash == next_move[:hash] }
 
     current_node = next_node
     moves_hashes << current_node.table.hash
