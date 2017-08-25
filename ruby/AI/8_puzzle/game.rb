@@ -140,9 +140,9 @@ expected_matrix = [
   [7,8,nil]
 ]
 original_matrix = [
-  [6,4,7],
-  [8,5,nil],
-  [3,2,1]
+  [nil,1,2],
+  [4,5,3],
+  [7,8,6]
 ]
 
 generate_graph= Proc.new do |g, node|
@@ -159,6 +159,12 @@ generate_graph= Proc.new do |g, node|
   end
 
   rn
+end
+
+draw_graph = Proc.new do |root_node|
+  g = GraphViz.new( :G, :type => :digraph )
+  generate_graph.call(g, root_node)
+  g.output(jpg: "graph.jpg")
 end
 
 root_table   = Table.new(original_matrix, expected_matrix)
@@ -179,15 +185,18 @@ while (current_node.table.score != 0 && !root_node.finished) do
     move[:table].score
   end.first
 
-  if next_move
-    possible_moves.select do |move|
-      !current_node.nodes.find { |node| node.hash ==move[:hash] }
-    end.each do |move|
-      next_node = Node.new(move[:table], move[:move])
-      next_node.finish if moves_hashes.include?(move[:hash])
-      current_node.nodes << next_node
-    end
+  possible_moves.select do |move|
+    !current_node.nodes.find { |node| node.hash ==move[:hash] }
+  end.each do |move|
+    next_node = Node.new(move[:table], move[:move])
+    next_node.finish if moves_hashes.include?(move[:hash])
+    current_node.nodes << next_node
+  end
 
+  draw_graph.call(root_node)
+  sleep(5)
+
+  if next_move
     next_node = current_node.nodes.find { |node| node.hash == next_move[:hash] }
 
     current_node = next_node
@@ -200,12 +209,8 @@ while (current_node.table.score != 0 && !root_node.finished) do
     moves_hashes = [root_table.hash]
   end
 
-  sleep(0.5)
 end
 
-g = GraphViz.new( :G, :type => :digraph )
-n = generate_graph.call(g, root_node)
-g.output(jpg: "graph.jpg")
 
 p 'Ended'
 
