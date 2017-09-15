@@ -4,10 +4,14 @@
 require './linear_model'
 
 observations = [
-  [2, 3],
-  [4, 6],
-  [6, 4],
-  [8, 1],
+  [-5, 21],
+  [-2, 19],
+  [1, 19],
+  [4, 21],
+  [7, 21],
+  [10, 24],
+  [13, 27],
+  [16, 24]
 ]
 
 
@@ -32,11 +36,10 @@ end
 lm = LinearModel.new(observations)
 
 init_x = min_x(observations)
-init_y = lm.second_degree_y_prediction(init_x)
+init_y = lm.first_degree_y_prediction(init_x)
 
 final_x = max_x(observations)
-final_y = lm.second_degree_y_prediction(final_x)
+final_y = lm.first_degree_y_prediction(final_x)
 
 # regression_coordinates = 10.times.map { : }
-require 'pry'; binding.pry
 write(observations, [[init_x, init_y], [final_x, final_y]])
