@@ -1,30 +1,31 @@
-graph = Graph.new
-graph.create_graph(root_node)
+require 'graphviz'
+# graph = Graph.new
+# graph.create_graph(root_node)
 
 class Graph
   attr_accessor :graph
 
   def initialize
     @graph = GraphViz.new( :G, :type => :digraph )
-    generate_graph.call(g, root_node)
+    # generate_graph.call(g, root_node)
   end
 
-  def create_graph(node)
-    node_id = node.move.to_s + node.hash.to_s[0..5]
-    options = { label: node.move.to_s + ' ' + node.table.score.to_s }
-    options.merge!(style: 'filled') if node.finished
+  def build_graph(node)
+    node_id = node.move.to_s + node.id.to_s[0..5]
+    options = { label: node.move.to_s + ' ' + node.board.score.to_s }
+    # options.merge!(style: 'filled') if node.finished
 
-    rn = g.add_node(node_id, options)
+    current_node = graph.add_node(node_id, options)
 
-    node.nodes.each do |node|
-      ch = generate_graph.call(g, node)
-      g.add_edges(rn, ch)
+    node.children.each do |node|
+      child = build_graph(node)
+      graph.add_edges(current_node, child)
     end
 
-    rn
+    current_node
   end
 
   def output
-    @graph.output(jpg: "graph.jpg")
+    graph.output(jpg: "graph.jpg")
   end
 end
