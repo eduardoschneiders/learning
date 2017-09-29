@@ -60,7 +60,7 @@ class Node
   end
 
   def self.leave_nodes
-    @@leave_node_ids.map { |id| @@nodes.find { |n| n.id == id} }
+    @@leave_node_ids.map { |id| @@nodes.find { |n| n.id == id} }.select { |n| !n.visited }
   end
 
   def self.best_leave

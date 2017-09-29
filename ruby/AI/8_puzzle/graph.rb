@@ -26,6 +26,6 @@ class Graph
   end
 
   def output
-    graph.output(jpg: "graph.jpg")
+    graph.output(pdf: "graph.pdf")
   end
 end

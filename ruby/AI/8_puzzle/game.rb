@@ -37,17 +37,44 @@ board = Board.new(original_matrix, expected_matrix)
 root_node = Node.new(board, 'init')
 graph = Graph.new
 
-while((current_node = Node.best_leave) && current_node.board.score != 0)
+def generate_chields(current_node)
   current_node.mark_as_visited
 
-  current_node.board.possible_moves.each do |move|
+  current_node.board.possible_moves.map do |move|
     new_board = current_node.board.duplicate
     new_board.move(move)
     current_node.add_chield(new_board, move)
   end
 end
 
-count = current_node.count_moves
+count = 0
+while(!winner = Node.leave_nodes.find { |node| node.board.score == 0}) do
+  t = Time.now
+  leaves = Node.leave_nodes
+  queue = Queue.new
+  leaves.each do |node|
+    queue.push node
+  end
+
+  30.times.map do
+    Thread.new do
+      while !queue.empty?
+        node = queue.pop
+        generate_chields(node)
+      end
+    end
+  end.each(&:join)
+
+  leaves = Node.leave_nodes
+  min_score = leaves.min_by { |n| n.board.score }.board.score
+
+  p "#{(Time.now - t).round(2)} -> #{leaves.count}, score: #{min_score}"
+  count += 1
+  # break if count >= 15
+end
+
+# winner ||= Node.leave_nodes.min_by { |node| node.board.score }
+count = winner.count_moves
 p "#{count} moves"
 
 graph.build_graph(root_node)
