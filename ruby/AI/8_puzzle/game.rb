@@ -38,25 +38,28 @@ root_node = Node.new(board, 'init')
 graph = Graph.new
 
 def generate_chields(current_node)
-  current_node.mark_as_visited
+  # current_node.mark_as_visited
 
-  current_node.board.possible_moves.map do |move|
+  children_options = current_node.board.possible_moves.map do |move|
     new_board = current_node.board.duplicate
     new_board.move(move)
-    current_node.add_chield(new_board, move)
+    { board: new_board, move: move }
   end
+
+  current_node.add_children(children_options)
 end
 
 count = 0
 while(!winner = Node.leave_nodes.find { |node| node.board.score == 0}) do
   t = Time.now
   leaves = Node.leave_nodes
+  # leaves = [Node.best_leave]
   queue = Queue.new
   leaves.each do |node|
     queue.push node
   end
 
-  30.times.map do
+  300.times.map do
     Thread.new do
       while !queue.empty?
         node = queue.pop
@@ -64,7 +67,6 @@ while(!winner = Node.leave_nodes.find { |node| node.board.score == 0}) do
       end
     end
   end.each(&:join)
-
   leaves = Node.leave_nodes
   min_score = leaves.min_by { |n| n.board.score }.board.score
 

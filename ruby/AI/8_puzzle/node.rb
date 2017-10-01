@@ -1,7 +1,7 @@
 class Node
   attr_accessor :id, :board, :move, :visited, :parent_id, :chield_ids
   @@nodes = []
-  @@leave_node_ids = []
+  @@leave_nodes = []
 
   def initialize(board,  move = nil, parent_id = nil)
     @id = board.hash
@@ -11,27 +11,29 @@ class Node
     @parent_id = parent_id
     @chield_ids = []
     @@nodes << self
-    @@leave_node_ids << @id
-    delete_parent_on_leaves
+    @@leave_nodes << self
   end
 
-  def mark_as_visited
-    @visited = true
-  end
+  # def mark_as_visited
+  #   @visited = true
+  # end
 
-  def add_chield(board, move)
-    return if node_already_exist?(board.hash)
+  def add_children(children_options)
+    delete_on_leaves
+    children_options.each do |options|
+      next if node_already_exist?(options[:board].hash)
 
-    chield_ids << board.hash
-    Node.new(board, move, self.id)
+      chield_ids << options[:board].hash
+      Node.new(options[:board], options[:move], self.id)
+    end
   end
 
   def node_already_exist?(id)
     Node.nodes.map(&:id).include? id
   end
 
-  def delete_parent_on_leaves
-    @@leave_node_ids.delete_if { |n| n == parent_id }
+  def delete_on_leaves
+    @@leave_nodes.delete_if { |n| n && n.id == self.id }
   end
 
   def parent
@@ -60,7 +62,7 @@ class Node
   end
 
   def self.leave_nodes
-    @@leave_node_ids.map { |id| @@nodes.find { |n| n.id == id} }.select { |n| !n.visited }
+    @@leave_nodes
   end
 
   def self.best_leave
