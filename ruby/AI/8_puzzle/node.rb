@@ -66,6 +66,6 @@ class Node
   end
 
   def self.best_leave
-    leave_nodes.select { |n| !n.visited }.min_by { |node| node.board.score }
+    leave_nodes.compact.select { |n| !n.visited }.min_by { |node| node.board.score }
   end
 end

@@ -50,9 +50,9 @@ def generate_chields(current_node)
 end
 
 count = 0
-while(!winner = Node.leave_nodes.find { |node| node.board.score == 0}) do
+while(!winner = Node.leave_nodes.compact.find { |node| node.board.score == 0}) do
   t = Time.now
-  leaves = Node.leave_nodes
+  leaves = Node.leave_nodes.compact
   # leaves = [Node.best_leave]
   queue = Queue.new
   leaves.each do |node|
@@ -68,7 +68,7 @@ while(!winner = Node.leave_nodes.find { |node| node.board.score == 0}) do
     end
   end.each(&:join)
   leaves = Node.leave_nodes
-  min_score = leaves.min_by { |n| n.board.score }.board.score
+  min_score = leaves.compact.min_by { |n| n.board.score }.board.score
 
   p "#{(Time.now - t).round(2)} -> #{leaves.count}, score: #{min_score}"
   count += 1
