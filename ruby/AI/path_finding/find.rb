@@ -1,72 +1,57 @@
 #!/usr/bin/env ruby
+require 'net/http'
+require 'json'
 
-# original_cities = {
-#   A: { B: 1641, C: 1248, D: 3022 },
-#   B: { A: 2079, C: 2111, D: 1432 },
-#   C: { A: 1578, B: 2824, D: 3117 },
-#   D: { A: 6000, B: 6083, C: 4736 }
-# }
-
-# original_cities = {
-#   A: { B: 1, C: 1248, D: 3022, E: 4377 },
-#   B: { A: 2079, C: 2, D: 1432, E: 4343 },
-#   C: { A: 1578, B: 2824, D: 3, E: 1213 },
-#   D: { A: 4, B: 6083, C: 4736 , E: 5 },
-#   E: { A: 6, B: 6083, C: 4736 , D: 1877}
-# }
-
-# original_cities = {
-#   t: {p: 426, u: 707, e: 405},
-#   u: {p: 824, t:707, e: 638},
-#   p: {t: 426, u: 824, e: 695},
-#   e: {p: 695, u:638, t:405 }
-# }
-original_cities = {
-  t: {p: 426, u: 707, e: 405, r:2942 , m:4510 },
-  u: {p: 824, t:707, e: 638, r:3231 , m:4380 },
-  p: {t: 426, u: 824, e: 695, r:3340 , m:4739 },
-  e: {p: 695, u:638, t:405, r:2791 , m:4115 },
-  m: {t: 4510, u:4380, p:4739, e:4115, r:4302 },
-  r: {t: 2942, u: 3231, p:3340, e:2791, m:4302 }
+city_map = {
+  :A => 'Aracajú',
+  :B => 'Belém',
+  :C => 'Belo Horizonte',
+  :D => 'Boa Vista - Roraima',
+  :E => 'Brasília',
+  :F => 'Campo Grande, MS',
+  :G => 'Cuiabá - Mato Grosso',
+  :H => 'Curitiba',
+  :I => 'Florianópolis',
+  :J => 'Fortaleza',
+  :K => 'Goiânia',
+  :L => 'João Pessoa',
+  :M => 'Maceió',
+  :N => 'Manaus',
+  :O => 'Natal, RN',
+  :P => 'Palmas',
+  :Q => 'Porto Alegre, RS',
+  :R => 'Porto Velho',
+  :S => 'Recife',
+  :T => 'Rio Branco, Acre, Brasil',
+  :U => 'Rio de Janeiro',
+  :V => 'Salvador - BA',
+  :W => 'São Luis',
+  :X => 'São Paulo',
 }
 
-original_cities = {
+def distances(origin, destinations)
+  uri = URI(URI.escape("http://maps.googleapis.com/maps/api/distancematrix/json?origins=#{origin}&destinations=#{destinations.join('|')}"))
+  response = JSON.parse Net::HTTP.get(uri)
+  begin
+    response['rows'].first['elements'].map { |e| e['distance']['value'] }
+  rescue
+    require 'pry'; binding.pry
+  end
+end
 
 
-A: { A: 000,  B: 1641,  C: 1248,  D: 3022,  E: 1292,  F: 2155,  G: 2121,  H: 2061,  I: 2207,  J: 815,  K: 1461,  L: 486,  M: 1967,  N: 201,  O: 2673,  P: 604,  Q: 1235,  R: 2580,  S: 2946,  T: 398,  U: 3359,  V: 1482,  W: 277,  X: 1226 },
-B: { A: 2079,  B: 000,  C: 2111,  D: 1432,  E: 1592,  F: 2212,  G: 1778,  H: 2665,  I: 2904,  J: 1133,  K: 1693,  L: 1636,  M: 329,  N: 1680,  O: 1292,  P: 1550,  Q: 973,  R: 3188,  S: 1886,  T: 1676,  U: 2333,  V: 2450,  W: 1687,  X: 481 },
-C: { A: 1578,  B: 2824,  C: 000,  D: 3117,  E: 624,  F: 1118,  G: 1372,  H: 820,  I: 973,  J: 1893,  K: 666,  L: 1726,  M: 2349,  N: 1439,  O: 2556,  P: 1831,  Q: 1178,  R: 1341,  S: 2477,  T: 1639,  U: 2786,  V: 339,  W: 964,  X: 1932 },
-D: { A: 6000,  B: 6083,  C: 4736,  D: 000,  E: 2496,  F: 2667,  G: 2107,  H: 3370,  I: 3620,  J: 2562,  K: 2503,  L: 3067,  M: 1110,  N: 3089,  O: 661,  P: 2983,  Q: 1988,  R: 3785,  S: 1335,  T: 3103,  U: 1626,  V: 3428,  W: 3009,  X: 1913 },
-E: { A: 1652,  B: 2120,  C: 716,  D: 4275,  E: 000,  F: 878,  G: 873,  H: 1081,  I: 1314,  J: 1687,  K: 173,  L: 1716,  M: 1791,  N: 1485,  O: 1932,  P: 1775,  Q: 620,  R: 1619,  S: 1900,  T: 1657,  U: 2246,  V: 933,  W: 1060,  X: 1524 },
-F: { A: 2765,  B: 2942,  C: 1453,  D: 3836,  E: 1134,  F: 000,  G: 559,  H: 780,  I: 1007,  J: 2547,  K: 705,  L: 2593,  M: 2309,  N: 2352,  O: 2013,  P: 2654,  Q: 1320,  R: 1119,  S: 1634,  T: 2530,  U: 1827,  V: 1212,  W: 1905,  X: 2284 },
-G: { A: 2775,  B: 2941,  C: 1594,  D: 3142,  E: 1133,  F: 694,  G: 000,  H: 1302,  I: 1543,  J: 2329,  K: 740,  L: 2495,  M: 1822,  N: 2302,  O: 1453,  P: 2524,  Q: 1029,  R: 1679,  S: 1137,  T: 2452,  U: 1414,  V: 1575,  W: 1915,  X: 1942 },
-H: { A: 2595,  B: 3193,  C: 1004,  D: 4821,  E: 1366,  F: 991,  G: 1679,  H: 000,  I: 251,  J: 2670,  K: 972,  L: 2545,  M: 2836,  N: 2259,  O: 2734,  P: 2645,  Q: 1693,  R: 546,  S: 2412,  T: 2459,  U: 2601,  V: 675,  W: 1784,  X: 2599 },
-I: { A: 2892,  B: 3500,  C: 1301,  D: 5128,  E: 1673,  F: 1298,  G: 1986,  H: 300,  I: 000,  J: 2857,  K: 1215,  L: 2693,  M: 3082,  N: 2402,  O: 2981,  P: 2802,  Q: 1931,  R: 376,  S: 2641,  T: 2603,  U: 2809,  V: 748,  W: 1930,  X: 2821 },
-J: { A: 1183,  B: 1610,  C: 2528,  D: 6548,  E: 2200,  F: 3407,  G: 3406,  H: 3541,  I: 3838,  J: 000,  K: 1854,  L: 555,  M: 1451,  N: 730,  O: 2383,  P: 435,  Q: 1300,  R: 3213,  S: 2855,  T: 629,  U: 3300,  V: 2190,  W: 1028,  X: 652 },
-K: { A: 1848,  B: 2017,  C: 906,  D: 4076,  E: 209,  F: 935,  G: 934,  H: 1186,  I: 1493,  J: 2482,  K: 000,  L: 1889,  M: 1868,  N: 1656,  O: 1912,  P: 1948,  Q: 724,  R: 1497,  S: 1813,  T: 1829,  U: 2138,  V: 936,  W: 1225,  X: 1662 },
-L: { A: 611,  B: 2161,  C: 2171,  D: 6593,  E: 2245,  F: 3357,  G: 3366,  H: 3188,  I: 3485,  J: 688,  K: 2442,  L: 000,  M: 1964,  N: 299,  O: 2819,  P: 151,  Q: 1521,  R: 3066,  S: 3200,  T: 104,  U: 3632,  V: 1968,  W: 763,  X: 1162 },
-M: { A: 294,  B: 2173,  C: 1854,  D: 6279,  E: 1930,  F: 3040,  G: 3049,  H: 2871,  I: 3168,  J: 1075,  K: 2125,  L: 395,  M: 000,  N: 2778,  O: 434,  P: 1383,  Q: 2775,  R: 3090,  S: 202,  T: 3510,  U: 1671,  V: 475,  W: 1234,  X: 1928 },
-N: { A: 5215,  B: 5298,  C: 3951,  D: 785,  E: 3490,  F: 3051,  G: 2357,  H: 4036,  I: 4443,  J: 5763,  K: 3291,  L: 5808,  M: 5491,  N: 000,  O: 2765,  P: 1509,  Q: 3132,  R: 761,  S: 2833,  T: 1149,  U: 2849,  V: 2605,  W: 1746,  X: 2689 },
-O: { A: 788,  B: 2108,  C: 2348,  D: 6770,  E: 2422,  F: 3534,  G: 3543,  H: 3365,  I: 3662,  J: 537,  K: 2618,  L: 185,  M: 572,  N: 5985,  O: 000,  P: 1527,  Q: 3172,  R: 3179,  S: 253,  T: 3616,  U: 2085,  V: 875,  W: 1071,  X: 2320 },
-P: { A: 1662,  B: 1283,  C: 1690,  D: 4926,  E: 973,  F: 1785,  G: 1784,  H: 2036,  I: 2336,  J: 2035,  K: 874,  L: 2253,  M: 1851,  N: 4141,  O: 2345,  P: 000,  Q: 2222,  R: 1711,  S: 1498,  T: 2127,  U: 1512,  V: 1114,  W: 964,  X: 1493 },
-Q: { A: 3296,  B: 3852,  C: 1712,  D: 5348,  E: 2027,  F: 1518,  G: 2206,  H: 711,  I: 476,  J: 4242,  K: 1847,  L: 3889,  M: 3572,  N: 4563,  O: 4066,  P: 2747,  Q: 000,  R: 2706,  S: 2977,  T: 2814,  U: 1123,  V: 2303,  W: 3142,  X: 852 },
-R: { A: 4230,  B: 4397,  C: 3050,  D: 1686,  E: 2589,  F: 2150,  G: 1456,  H: 3135,  I: 3442,  J: 4862,  K: 2390,  L: 4822,  M: 4505,  N: 901,  O: 4998,  P: 3662,  Q: 000,  R: 3190,  S: 449,  T: 2707,  U: 2808,  V: 2274,  W: 2463,  X: 2362 },
-S: { A: 501,  B: 2074,  C: 2061,  D: 6483,  E: 2135,  F: 3247,  G: 3255,  H: 3078,  I: 3375,  J: 800,  K: 2332,  L: 120,  M: 285,  N: 5698,  O: 297,  P: 2058,  Q: 3779,  R: 4712,  S: 000,  T: 3618,  U: 1874,  V: 675,  W: 1209,  X: 2128 },
-T: { A: 4763,  B: 4931,  C: 3584,  D: 2230,  E: 3123,  F: 2684,  G: 1990,  H: 3669,  I: 3976,  J: 5396,  K: 2924,  L: 5356,  M: 5039,  N: 1445,  O: 5533,  P: 3764,  Q: 4196,  R: 544,  S: 5243,  T: 000,  U: 2982,  V: 3206,  W: 2726,  X: 2704 },
-U: { A: 1855,  B: 3250,  C: 434,  D: 5159,  E: 1148,  F: 1444,  G: 2017,  H: 852,  I: 1144,  J: 2805,  K: 1338,  L: 2448,  M: 2131,  N: 4374,  O: 2625,  P: 2124,  Q: 1553,  R: 3473,  S: 2338,  T: 4007,  U: 000,  V: 1209,  W: 2266,  X: 357 },
-V: { A: 356,  B: 2100,  C: 1372,  D: 5794,  E: 1446,  F: 2568,  G: 2566,  H: 2385,  I: 2682,  J: 1389,  K: 1643,  L: 949,  M: 632,  N: 5009,  O: 1126,  P: 1454,  Q: 3090,  R: 4023,  S: 839,  T: 4457,  U: 1649,  V: 000,  W: 1323,  X: 1453 },
-W: { A: 1578,  B: 806,  C: 2738,  D: 6120,  E: 2157,  F: 2979,  G: 2978,  H: 3230,  I: 3537,  J: 1070,  K: 2054,  L: 1660,  M: 1672,  N: 5335,  O: 1607,  P: 1386,  Q: 3891,  R: 4434,  S: 1573,  T: 4968,  U: 3015,  V: 1599,  W: 000,  X: 2348 },
-X: { A: 2187,  B: 2933,  C: 586,  D: 4756,  E: 1015,  F: 1014,  G: 1614,  H: 408,  I: 705,  J: 3127,  K: 926,  L: 2770,  M: 2453,  N: 3971,  O: 2947,  P: 1776,  Q: 1109,  R: 3070,  S: 2660,  T: 3604,  U: 429,  V: 1962,  W: 2970,  X: 000 },
+# original_cities = {}
+# city_map.each do |key, city|
+#   p city
+#   distances = distances(city, city_map.map { |_, c| c.gsub(' ', '+') })
+#   sleep(10)
+#   original_cities[key] = city_map.each_with_index.map { |e, i| [e.first, distances[i]]}.to_h
+# end
+original_cities = File.open('distances.json', 'r') { |f| JSON.parse f.read }
 
 
 
-
-
-
-
-}
-
-start_city_name = :T
+start_city_name = 'D'
 
 def measure_distance(city, original_cities)
   prev = city.shift
@@ -90,7 +75,8 @@ def mutate(gens)
       temp = first_gen[0][i]
 
       first_gen[i] = second_gen[i]
-      second_gen[i] = temp.to_sym
+      # second_gen[i] = temp.to_sym
+      second_gen[i] = temp
     end
 
     [first_gen, second_gen]
@@ -100,8 +86,13 @@ end
 available_cities = original_cities.dup
 start_city = available_cities.delete(start_city_name)
 
+samples = 1000
+ages = 100
+to_mutate = 900
+to_sort = 100
+
 ##Geração dos arrays
-gens = 100.times.map do
+gens = samples.times.map do
   all_cities = available_cities.dup
   gem = []
 
@@ -115,14 +106,27 @@ gens = 100.times.map do
   gem.unshift(start_city_name) << start_city_name
 end
 
-
 ##ERAS
-10.times.each do
-  best = gens.sort_by { |gen| measure_distance(gen.dup, original_cities) }.take(50)
-  best_mutated = mutate(best.dup)
-  gens = best_mutated + gens.take(4)
+all = ages.times.map do
+  sorted = gens.sort_by { |gen| measure_distance(gen.dup, original_cities) }
+  best_mutated = mutate(sorted.dup.take(to_mutate))
+  gens = sorted.take(to_sort) + best_mutated
+  gens
 end
+b = all.flatten(1).sort_by{ |gen| measure_distance(gen.dup, original_cities) }.first
+p measure_distance(b.dup, original_cities)
+p b.inspect
+
+p '--------'
+p measure_distance(gens.first.dup, original_cities)
+p gens.first.inspect
 
 best_gen = gens.first
 p measure_distance(best_gen.dup, original_cities)
+cities = best_gen.map { |l| city_map[l.to_sym].gsub(' ', '+') }
+start_city = cities.shift
+finish_city = cities.pop
+waypoints = cities.join('|')
+url =  "'https://www.google.com/maps/dir/?api=1&origin=#{start_city}&destination=#{finish_city}&waypoints=#{waypoints}'"
+system "firefox #{url}"
 p best_gen.inspect
