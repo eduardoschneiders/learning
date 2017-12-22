@@ -16,4 +16,3 @@ ln -rs distributed_system/app/* distributed_system_$1/app/
 
 rm distributed_system_$1/Gemfile*
 ln  distributed_system/Gemfile* distributed_system_$1/
-
