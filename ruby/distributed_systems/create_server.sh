@@ -5,8 +5,8 @@ rm -r distributed_system_$1/tmp/
 rm distributed_system_$1/config/initializers/remote_control.rb
 ln distributed_system//config/initializers/remote_control.rb distributed_system_$1/config/initializers/remote_control.rb
 
-rm distributed_system_$1/lib/middlewares/remote_control.rb
-ln distributed_system/lib/middlewares/remote_control.rb distributed_system_$1/lib/middlewares/
+rm -rf distributed_system_$1/lib/*
+ln -rs distributed_system/lib/* distributed_system_$1/lib/
 
 rm distributed_system_$1/config/routes.rb
 ln distributed_system/config/routes.rb distributed_system_$1/config/routes.rb
