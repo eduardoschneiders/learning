@@ -48,11 +48,13 @@ def processor_pack(numbers, size = 3)
 end
 
 size = 3
-numbers = [9, 3, 1, 2, 8, 4, 5, 6, 7, 2, 1]
+numbers = [9, 3, 2, 8, 4, 1, 3]
+numbers = 500.times.map { Random.rand(100) }
+t = numbers.dup
 
-while size <= numbers.size * 2
+begin
   numbers = processor_pack(numbers, size)
-  size *= 2
-end
+end while(size <= numbers.size && size *= 2)
 
 p numbers
+raise 'Not equal' if numbers.hash != t.sort.hash
