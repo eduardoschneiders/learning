@@ -29,6 +29,39 @@ CAR_ATTRS = [
   'price'
 ]
 
+FLAGS_ATTRS =[
+  'name',
+  'landmass',
+  'zone',
+  'area',
+  'population',
+  'language',
+  'religion',
+  'bars',
+  'stripes',
+  'colours',
+  'red',
+  'green',
+  'blue',
+  'gold',
+  'white',
+  'black',
+  'orange',
+  'mainhue',
+  'circles',
+  'crosses',
+  'saltires',
+  'quarters',
+  'sunstars',
+  'crescent',
+  'triangle',
+  'icon',
+  'animate',
+  'text',
+  'topleft',
+  'botright',
+]
+
 def euclidean_distance(instance1, instance2, k)
   total = 0
   k.times.each do |x|
@@ -72,8 +105,8 @@ def json_data(file)
 end
 
 def data
-  file_name = 'data_flags.json'
   file_name = 'data_cars.json'
+  file_name = 'data_flags.json'
 
   data = json_data(file_name)
   data.select { |d| d.none? { |prop| prop == '?'} }
@@ -81,7 +114,7 @@ end
 
 def car_attributes(data, record, attributes)
   attributes.map do |attr|
-    index_attribute = CAR_ATTRS.index(attr)
+    index_attribute = FLAGS_ATTRS.index(attr)
     raw_value = record[index_attribute]
 
     if raw_value.class == String
@@ -93,19 +126,19 @@ def car_attributes(data, record, attributes)
 end
 
 train_data = data.map do |i|
-  index_attribute = CAR_ATTRS.index('fuel-type')
+  index_attribute = FLAGS_ATTRS.index('zone')
   raw_value = i[index_attribute]
 
   {
-    data: car_attributes(data, i, ['length', 'width', 'height', 'num-of-cylinders', 'num-of-doors', 'fuel-system']).push(raw_value),
+    data: car_attributes(data, i, ['triangle', 'icon', 'sunstars', 'zone', 'language', 'religion', 'stripes', 'colours', 'red', 'green']).push(raw_value),
     raw: i
   }
 end.compact
 
-instance = train_data[44]
+instance = train_data[48]
 neighbors = neighbors(train_data, instance)
 name = class_name(neighbors)
 
-p "Predicted Class: #{name}"
-p "Actual Class: #{instance}"
-p "Most relevant: #{neighbors.first[:instance]}"
+puts "\n\nPredicted Class: #{name}"
+puts "\n\nActual Class: #{instance}"
+puts  "\n\nMost relevant: #{neighbors.first[:instance]}"
