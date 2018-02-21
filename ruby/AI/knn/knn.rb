@@ -126,19 +126,20 @@ def car_attributes(data, record, attributes)
 end
 
 train_data = data.map do |i|
-  index_attribute = FLAGS_ATTRS.index('zone')
+  index_attribute = FLAGS_ATTRS.index('religion')
   raw_value = i[index_attribute]
 
   {
-    data: car_attributes(data, i, ['triangle', 'icon', 'sunstars', 'zone', 'language', 'religion', 'stripes', 'colours', 'red', 'green']).push(raw_value),
+    data: car_attributes(data, i, ['triangle', 'icon', 'sunstars', 'zone', 'language', 'stripes', 'colours', 'red', 'green']).push(raw_value),
     raw: i
   }
 end.compact
 
-instance = train_data[48]
+instance = train_data[Random.rand(train_data.size)]
 neighbors = neighbors(train_data, instance)
 name = class_name(neighbors)
 
 puts "\n\nPredicted Class: #{name}"
-puts "\n\nActual Class: #{instance}"
-puts  "\n\nMost relevant: #{neighbors.first[:instance]}"
+puts "Actual Class: #{instance[:data][-1]}"
+puts "\n\nInstance: #{instance}"
+puts  "\nMost relevant: #{neighbors.first[:instance]}"
