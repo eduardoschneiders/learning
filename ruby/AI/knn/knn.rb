@@ -1,5 +1,6 @@
 require 'json'
 require './flags'
+require './cars'
 
 def euclidean_distance(instance1, instance2, k)
   total = 0
@@ -55,6 +56,7 @@ def normalize(data)
 end
 
 train_data            = Flags.train_data('religion', 'zone', 'population', 'area', 'language', 'mainhue', 'circles', 'name')
+train_data            = Cars.train_data('peak-rpm', 'stroke', 'city-mpg', 'compression-ratio', 'fuel-type')
 normalized_train_data = normalize(train_data)
 
 instance = normalized_train_data[Random.rand(normalized_train_data.size)]
@@ -64,4 +66,4 @@ name = class_name(neighbors)
 puts "\n\nPredicted Class: #{name}"
 puts "Actual Class: #{instance[-1]}"
 puts "\nInstance: #{instance}"
-puts  "\nMost relevant: #{neighbors.first[:instance]}"
+puts  "Most relevant: #{neighbors.first[:instance]}"
